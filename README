@@ -8,9 +8,8 @@ Northwestern University
 Team Members: 
 Matt Chan
 Neeraj Chandra
-Feng
+Chiyuan Feng
 Shantaviae Wynn
-
 
 Goal:
 Design a 5-stage pipelined processor in Verilog that is compatible with the DLX ISA 
