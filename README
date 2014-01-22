@@ -1,6 +1,15 @@
-README:
-
+README
 
 Group Project
 EECS 362
 Computer Architecture Projects
+Northwestern University 
+
+Team Members: 
+Matt Chan
+Neeraj Chandra
+Chiyuan Feng
+Shantaviae Wynn
+
+Goal:
+Design a 5-stage pipelined processor in Verilog that is compatible with the DLX ISA 
