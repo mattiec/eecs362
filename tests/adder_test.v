@@ -5,7 +5,7 @@ module adder_test;
       wire [31:0] SUM;
       wire COUT;
 
-      fa_32 adder(A,B,CIN,SUM,COUT);
+      fa_32bit adder(A,B,CIN,SUM,COUT);
 
     initial begin
           $monitor("A=%b B=%b CIN=%b SUM=%b COUT=%b", A, B, CIN, SUM, COUT);
