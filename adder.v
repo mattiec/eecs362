@@ -5,15 +5,16 @@ module fa(a, b, cin, sum, cout);
 
 	assign sum = (a ^ b) ^ cin;
 	assign cout = (a&b)^(cin&(a^b));
+	
 endmodule
 
 module fa_32bit(a, b, cin, sum, cout);
 	parameter width = 32;
 	
-	input [width-1:0] a, b;
+	input [0:width-1] a, b;
 	input cin;
 	
-	output [width-1:0] sum;
+	output [0:width-1] sum;
 	output cout;
 	
 	wire cout0, cout1, cout2, cout3, cout4, cout5, cout6, cout7;
