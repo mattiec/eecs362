@@ -2,9 +2,12 @@
 module fa(a, b, cin, sum, cout);
 	input a, b, cin;
 	output sum, cout;
+	wire b0;
+	
+	b0 = b ^ cin;
 
-	assign sum = (a ^ b) ^ cin;
-	assign cout = (a&b)^(cin&(a^b));
+	assign sum = (a ^ b0) ^ cin;
+	assign cout = (a & b0) | (a & cin) | (b0 & cin);
 	
 endmodule
 
