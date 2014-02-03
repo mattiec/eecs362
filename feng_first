@@ -1,0 +1,73 @@
+#! /home/gho705/opt/iverilog/bin/vvp
+:ivl_version "0.9.5 " "(v0_9_5)";
+:vpi_time_precision + 0;
+:vpi_module "system";
+:vpi_module "v2005_math";
+:vpi_module "va_math";
+S_0x1263380 .scope module, "testbench" "testbench" 2 1;
+ .timescale 0 0;
+v0x1277c10_0 .var "A", 0 0;
+v0x1277cb0_0 .var "B", 0 0;
+v0x1277d60_0 .var "CIN", 0 0;
+v0x1277e10_0 .net "COUT", 0 0, L_0x1278460; 1 drivers
+v0x1277ef0_0 .net "SUM", 0 0, L_0x12780d0; 1 drivers
+S_0x1263470 .scope module, "FA" "fa" 2 8, 3 1, S_0x1263380;
+ .timescale 0 0;
+L_0x1277fa0 .functor XOR 1, v0x1277c10_0, v0x1277cb0_0, C4<0>, C4<0>;
+L_0x12780d0 .functor XOR 1, L_0x1277fa0, v0x1277d60_0, C4<0>, C4<0>;
+L_0x1278220 .functor AND 1, v0x1277c10_0, v0x1277cb0_0, C4<1>, C4<1>;
+L_0x1278280 .functor XOR 1, v0x1277c10_0, v0x1277cb0_0, C4<0>, C4<0>;
+L_0x1278400 .functor AND 1, v0x1277d60_0, L_0x1278280, C4<1>, C4<1>;
+L_0x1278460 .functor XOR 1, L_0x1278220, L_0x1278400, C4<0>, C4<0>;
+v0x1263560_0 .net *"_s0", 0 0, L_0x1277fa0; 1 drivers
+v0x1277670_0 .net *"_s4", 0 0, L_0x1278220; 1 drivers
+v0x1277710_0 .net *"_s6", 0 0, L_0x1278280; 1 drivers
+v0x12777b0_0 .net *"_s8", 0 0, L_0x1278400; 1 drivers
+v0x1277860_0 .net "a", 0 0, v0x1277c10_0; 1 drivers
+v0x1277900_0 .net "b", 0 0, v0x1277cb0_0; 1 drivers
+v0x12779e0_0 .net "cin", 0 0, v0x1277d60_0; 1 drivers
+v0x1277a80_0 .alias "cout", 0 0, v0x1277e10_0;
+v0x1277b70_0 .alias "sum", 0 0, v0x1277ef0_0;
+    .scope S_0x1263380;
+T_0 ;
+    %vpi_call 2 11 "$monitor", "A=%b B=%b CIN=%b SUM=%b COUT=%b", v0x1277c10_0, v0x1277cb0_0, v0x1277d60_0, v0x1277ef0_0, v0x1277e10_0;
+    %delay 0, 0;
+    %set/v v0x1277c10_0, 0, 1;
+    %set/v v0x1277cb0_0, 0, 1;
+    %set/v v0x1277d60_0, 0, 1;
+    %delay 1, 0;
+    %set/v v0x1277c10_0, 0, 1;
+    %set/v v0x1277cb0_0, 0, 1;
+    %set/v v0x1277d60_0, 1, 1;
+    %delay 1, 0;
+    %set/v v0x1277c10_0, 0, 1;
+    %set/v v0x1277cb0_0, 1, 1;
+    %set/v v0x1277d60_0, 0, 1;
+    %delay 1, 0;
+    %set/v v0x1277c10_0, 0, 1;
+    %set/v v0x1277cb0_0, 1, 1;
+    %set/v v0x1277d60_0, 1, 1;
+    %delay 1, 0;
+    %set/v v0x1277c10_0, 1, 1;
+    %set/v v0x1277cb0_0, 0, 1;
+    %set/v v0x1277d60_0, 0, 1;
+    %delay 1, 0;
+    %set/v v0x1277c10_0, 1, 1;
+    %set/v v0x1277cb0_0, 0, 1;
+    %set/v v0x1277d60_0, 1, 1;
+    %delay 1, 0;
+    %set/v v0x1277c10_0, 1, 1;
+    %set/v v0x1277cb0_0, 1, 1;
+    %set/v v0x1277d60_0, 0, 1;
+    %delay 1, 0;
+    %set/v v0x1277c10_0, 1, 1;
+    %set/v v0x1277cb0_0, 1, 1;
+    %set/v v0x1277d60_0, 1, 1;
+    %end;
+    .thread T_0;
+# The file index is used to find the file name in the following table.
+:file_names 4;
+    "N/A";
+    "<interactive>";
+    "feng_first_testbench.v";
+    "feng_first.v";
