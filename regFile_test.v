@@ -8,19 +8,22 @@ module regFile_test;
 	wire [31:0] RData1;
 	wire [31:0] RData2;
 	
+	reg ftpt = 0;
+	
 	reg WrEn;
 	reg rst;
 	reg clk;
-	regFile test(rst, clk, WrAddr, WrEn, WData, Read1, Read2, RData1, RData2);
+	
+	//regFile test(rst, clk, WrAddr, WrEn, WData, Read1, Read2, RData1, RData2);
+
+	regFile test(rst, clk, ftpt, WrAddr, WrEn, WData, Read1, Read2, RData1, RData2);
+	//regFile test(rst, clk, WrAddr, WrEn, Read1, Read2, WData, RData1, RData2);
 	
 	
 	
 	initial begin
 		rst = 1;
 		clk = 0;
-		@(negedge clk);
-		@(negedge clk);
-		@(negedge clk);
 		@(negedge clk);
 		rst = 0;
 	end
@@ -36,8 +39,6 @@ module regFile_test;
 		WrAddr = 0;
 		WData = 0;
 		@(negedge rst);
-		@(posedge clk);
-		@(posedge clk);
 		@(posedge clk);
 		
 		//writing data into register file
