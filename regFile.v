@@ -1,9 +1,9 @@
 
-module regFile(rst, clk, ftpt, WrAddr, WrEn, WrData, ReadAddr1, ReadAddr2, ReadData1, ReadData2);
+module regFile(rst, clk, ftpt_write, ftpt_read, WrAddr, WrEn, WrData, ReadAddr1, ReadAddr2, ReadData1, ReadData2);
 
     input [0:31] WrData;
 	input [0:4] WrAddr, ReadAddr1, ReadAddr2;
-    input WrEn, clk, rst, ftpt;
+    input WrEn, clk, rst, ftpt_write, ftpt_read;
 
     output [0:31] ReadData1, ReadData2;
 	
@@ -21,7 +21,7 @@ module regFile(rst, clk, ftpt, WrAddr, WrEn, WrData, ReadAddr1, ReadAddr2, ReadD
 	
     // Write data to WrAddr and handle reset
     always @(negedge clk) begin
-        if (~ftpt) begin //If ftpt == 0 process with integer registers
+        if (~ftpt_write) begin //If ftpt == 0 process with integer registers
 			if(rst) begin
 				for (i = 0; i < 32; i = i+1) begin
 					reg_file[i] = 32'h00000000;
@@ -110,8 +110,8 @@ module regFile(rst, clk, ftpt, WrAddr, WrEn, WrData, ReadAddr1, ReadAddr2, ReadD
 		end
 	end
 	
-	mux2to1 mux1(reg_file[ReadAddr1], reg_file2[ReadAddr1], ftpt, ReadData1); //Read to Bus 1 based on ftpt
-	mux2to1 mux2(reg_file[ReadAddr2], reg_file2[ReadAddr2], ftpt, ReadData2); //Read to Bus 2 based on ftpt
+	mux2to1 mux1(reg_file[ReadAddr1], reg_file2[ReadAddr1], ftpt_read, ReadData1); //Read to Bus 1 based on ftpt
+	mux2to1 mux2(reg_file[ReadAddr2], reg_file2[ReadAddr2], ftpt_read, ReadData2); //Read to Bus 2 based on ftpt
 		
 		
 endmodule
