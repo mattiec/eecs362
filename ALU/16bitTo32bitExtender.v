@@ -1,6 +1,6 @@
-//module extender(a,out);
-//	input [0:15] a;
-//	output [0:31] out;
+module extender(a,out);
+	input [0:15] a;
+	output [0:31] out;
 
 	module extender (
 input signed [15:0] a,
