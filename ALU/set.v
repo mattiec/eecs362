@@ -76,11 +76,88 @@ module seq(a, b_in, set);
 //the out of the fa 32 bit is the value we care about. disregard the cout.
 	
 	always @(out)
-begin
-	if(out == 32'b0)
-		assign set = 1'b1;
-	else
-		assign set = 1'b0;
-end
+	begin
+		if(out == 32'b0)
+			assign set = 1'b1;
+		else
+			assign set = 1'b0;
+	end
 
 endmodule
+
+module sne(a,b,set);
+	parameter width = 32;
+	input [0:width-1] a,b;
+	wire [0:width-1] out;
+	wire cout;
+	output reg set;
+
+	fa_32bit setEqual(a,b,1,out,cout);
+
+	always @(out)
+	begin
+		if(out == 32'b0)
+			assign set = 1'b0;
+		else	
+			assign set = 1'b1;
+	end
+endmodule
+
+module sge(set,a,b);
+	//set greater than or equal
+	parameter width = 32;
+	input [0:width-1] a,b;
+	wire [0:width-1] out;
+	wire cout;
+	output reg set;
+
+	fa_32bit setEqual(a,b,1,out,cout);
+
+	always @(out)
+	begin
+		if(cout == 1'b1)
+			assign set = 1'b1;
+		else
+			assign set = 1'b0;
+
+	end
+endmodule
+
+module sle(set,a,b);
+
+	parameter width = 32;
+	input [0:width-1] a,b;
+	wire [0:width-1] out;
+	wire cout;
+	output reg set;
+
+	fa_32bit setEqual(b,a,1,out,cout);
+
+	always @(out)
+	begin
+		if(cout == 1'b1)
+			assign set = 1'b1;
+		else
+			assign set = 1'b0;
+	end
+endmodule
+
+module sgt(set,a,b);
+
+        parameter width = 32;
+        input [0:width-1] a,b;
+        wire [0:width-1] out;
+        wire cout;
+        output reg set;
+
+        fa_32bit setEqual(a,b,1,out,cout);
+
+        always @(out)
+        begin
+                if(cout == 1'b0)
+                        assign set = 1'b0;
+                else
+                        assign set = 1'b1;
+        end
+endmodule
+
