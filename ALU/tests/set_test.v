@@ -1,7 +1,7 @@
 module mux_test;
     reg [31:0] a, b;
 	
-    wire SEQ, SNE, SGE, SLE, SGT, SLT;
+    wire [31:0] SEQ, SNE, SGE, SLE, SGT, SLT;
 	
      
     seq seq1(a,b,SEQ);

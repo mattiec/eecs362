@@ -67,7 +67,7 @@ module seq(a,b,set);
 	input [0:width-1] a, b;
 	wire [0:width-1] out;
 	wire cout;
-	output reg set;
+	output reg [31:0] set;
 
 //if cin is 1 in mux_sub, then it is subtractor
 
@@ -78,9 +78,9 @@ module seq(a,b,set);
 	always @(out)
 	begin
 		if(out == 32'b0)
-			assign set = 1'b1;
+			assign set = 32'b1;
 		else
-			assign set = 1'b0;
+			assign set = 32'b0;
 	end
 
 endmodule
@@ -90,16 +90,16 @@ module sne(a,b,set);
 	input [0:width-1] a,b;
 	wire [0:width-1] out;
 	wire cout;
-	output reg set;
+	output reg [31:0] set;
 
 	fa_32bit setEqual(a,b,1,out,cout);
 
 	always @(out)
 	begin
 		if(out == 32'b0)
-			assign set = 1'b0;
+			assign set = 32'b0;
 		else	
-			assign set = 1'b1;
+			assign set = 32'b1;
 	end
 endmodule
 
@@ -109,16 +109,16 @@ module sge(a,b,set);
 	input [0:width-1] a,b;
 	wire [0:width-1] out;
 	wire cout;
-	output reg set;
+	output reg [31:0] set;
 
 	fa_32bit setEqual(a,b,1,out,cout);
 
 	always @(out)
 	begin
 		if(cout == 1'b0)
-			assign set = 1'b0;
+			assign set = 32'b0;
 		else
-			assign set = 1'b1;
+			assign set = 32'b1;
 
 	end
 endmodule
@@ -129,53 +129,53 @@ module sle(a,b,set);
 	input [0:width-1] a,b;
 	wire [0:width-1] out;
 	wire cout;
-	output reg set;
+	output reg [31:0] set;
 
 	fa_32bit setEqual(a,b,1,out,cout);
 
 	always @(out)
 	begin
 		if(cout == 1'b0 || out == 32'b0)
-			assign set = 1'b1;
+			assign set = 32'b1;
 		else
-			assign set = 1'b0;
+			assign set = 32'b0;
 	end
 endmodule
 
 module sgt(a,b,set);
 
-        parameter width = 32;
-        input [0:width-1] a,b;
-        wire [0:width-1] out;
-        wire cout;
-        output reg set;
+	parameter width = 32;
+	input [0:width-1] a,b;
+	wire [0:width-1] out;
+	wire cout;
+	output reg [31:0] set;
 
-        fa_32bit setEqual(a,b,1,out,cout);
+	fa_32bit setEqual(a,b,1,out,cout);
 
-        always @(out)
-        begin
-                if(cout == 1'b0 || out == 32'b0)
-                        assign set = 1'b0;
-                else
-                        assign set = 1'b1;
-        end
+	always @(out)
+	begin
+		if(cout == 1'b0 || out == 32'b0)
+				assign set = 32'b0;
+		else
+				assign set = 32'b1;
+	end
 endmodule
 
 module slt(a,b,set);
 
-        parameter width = 32;
-        input [0:width-1] a,b;
-        wire [0:width-1] out;
-        wire cout;
-        output reg set;
+	parameter width = 32;
+	input [0:width-1] a,b;
+	wire [0:width-1] out;
+	wire cout;
+	output reg [31:0] set;
 
-        fa_32bit setEqual(a,b,1,out,cout);
+	fa_32bit setEqual(a,b,1,out,cout);
 
-        always @(out)
-        begin
-                if(cout == 1'b0)
-                        assign set = 1'b1;
-                else
-                        assign set = 1'b0;
-        end
+	always @(out)
+	begin
+		if(cout == 1'b0)
+				assign set = 32'b1;
+		else
+				assign set = 32'b0;
+	end
 endmodule
