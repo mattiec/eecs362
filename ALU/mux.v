@@ -74,6 +74,23 @@ module mux8to1(a,b,c,d,e,f,g,h,sel,out);
 	
 endmodule
 
+
+module mux16to1(a0,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11,a12,a13,a14,a15,sel,out);
+	parameter width = 32;
+	input [width-1:0] a0,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11,a12,a13,a14,a15;
+	input [3:0] sel;
+
+	wire [width-1:0] i0, i1;
+
+	output [width-1:0] out;
+
+	mux8to1 iomux (a0,a1,a2,a3,a4,a5,a6,a7, sel[2:0], i0);
+	mux8to1 i1mux (a8,a9,a10,a11,a12,a13,a14,a15, sel[2:0], i1);
+
+	mux2to1 outmux(i0, i1, sel[3], out);
+
+endmodule
+
 module mux32to1(a0,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11,a12,a13,a14,a15,a16,a17,a18,a19,a20,a21,a22,a23,a24,a25,a26,a27,a28,a29,a30,a31,sel,out);
 	parameter width = 32;
 	input [width-1:0] a0,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11,a12,a13,a14,a15;

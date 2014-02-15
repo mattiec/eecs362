@@ -16,7 +16,7 @@ basic: basic.v tests/basic_test.v;
 	${VERILOG} basic.v tests/basic_test.v -o basic
 
 alu: alu.v tests/alu_test.v adder mult shift basic;
-	${VERILOG} alu.v adder.v mux.v mult.v fa.v shift.v basic.v tests/alu_test.v -o alu
+	${VERILOG} alu.v adder.v mux.v mult.v fa.v shift.v basic.v set.v tests/alu_test.v -o alu
 
 .PHONY: clean
 clean:
