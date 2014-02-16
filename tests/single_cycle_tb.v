@@ -6,7 +6,7 @@ reg reset;
 reg [8*80-1:0] filename;
 wire [0:31] PC;
 
-toplevel top(.clock(clock),.reset(reset));
+toplevel top(.clock(clock),.reset(reset), //howtotests);
 
 assign PC = {top.IFU.PCb,2'b00};
 
@@ -22,12 +22,12 @@ initial begin
 
   //Load IMEM from file
    if (!$value$plusargs("instrfile=%s", filename)) begin
-      filename = "fibinstr.hex";
+      filename = "fib.asm";
    end
    $readmemh(filename, top.IFU.IMEM.mem);
   // Load DMEM from file
   if (!$value$plusargs("datafile=%s", filename)) begin
-      filename = "fibdata.hex";
+      filename = "fib.asm";
   end
   $readmemh(filename, top.memory_block.core.mem);
 
