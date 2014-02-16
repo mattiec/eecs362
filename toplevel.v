@@ -1,4 +1,4 @@
-module toplevel(clk, rst)
+module toplevel(clk, rst, instruction)
 
 	input clk, rst;
 	
@@ -14,7 +14,7 @@ module toplevel(clk, rst)
 		
 	end
 	
-	wire [0:31] instruction;
+	input [0:31] instruction; //make back to wire
 	wire [0:15] immed;
 	wire [0:31] ExtOut;
 	
@@ -22,8 +22,8 @@ module toplevel(clk, rst)
 	
 	always @(negedge clk)begin
 	
-		instrfetch instructionfetch(Branch, Jump, instruction);
-		control controlUnit (instruction, RegDst, RegWr, RegFp_write, RegFp_read, ExtOp, ALUSrc, MemWr, Mem2Reg, Branch, Jump, ALUCtr);
+		//instrfetch instructionfetch(Branch, Jump, instruction);
+		control controlUnit (instruction, RegDst, RegWr, RegFp_write, RegFp_read, ALUCtr, ExtOp, ALUSrc, MemWr, Mem2Reg, Branch, Jump);
 		
 		RS = instruction[6:10];
 		RT = instruction[11:15];
@@ -39,7 +39,7 @@ module toplevel(clk, rst)
 		mux2to1 AluInMUX(busB, ExtOut, ALUSrc, bIN);
 		alu ALU(busA, bIN, ALUCtr, ALUOut, Zero);
 		
-		dmem(ALUOut, MemOut, busB, MemWr, //?diskSize, clk);
+		dmem(ALUOut, MemOut, busB, MemWr, 3, clk); //dsize = 3; write/read word size chunks from data memory
 		
 		mux2to1 MemToRegMUX(ALUOut, MemOut, Mem2Reg, busWr);
 		
