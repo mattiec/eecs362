@@ -15,8 +15,10 @@ module alu_test;
           #1 A = 32'hFF40; B = 32'h03FF; CTRL = 4'b0010;
           #1 A = 32'h0004; B = 32'h0008; CTRL = 4'b0011;
           #1 A = 32'hFFF000; B = 32'h000A; CTRL = 4'b0101;
-          #1 A = 32'hFFFFFFFF; B = 32'hFFFF; CTRL = 4'b1101;
           #1 A = 32'hFFFFFFFF; B = 32'hFFFF; CTRL = 4'b0101;
+	  #1 A = 32'h0000000F; B = 32'h00000008; CTRL = 4'b1101;
+	  #1 A = 32'h00000007; B = 32'h0000001F; CTRL = 4'b1101;
+	  #1 A = 32'h00000000; B = 32'h00000001; CTRL = 4'b1101;
 
 	 #1 $display("shift left, then shift right arithmetic, then shift right logical");
 	 #1 A = 32'h0000FFFF; B = 32'h0000000D; CTRL=4'b0100;
