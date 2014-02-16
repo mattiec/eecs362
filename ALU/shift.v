@@ -5,7 +5,7 @@ module shift(a, b, ctrl,out);
 
 	always@(ctrl or a or b)
 	begin 
-	  if (ctrl[0]==1) //shift left? 
+	  if (ctrl[0]==0) //shift left? 
 		assign out = a << b;
 	  else
 		if (ctrl[1]==0)

@@ -14,9 +14,22 @@ module alu_test;
           #1 A = 32'hFF40; B = 32'h00FF; CTRL = 4'b0001;
           #1 A = 32'hFF40; B = 32'h03FF; CTRL = 4'b0010;
           #1 A = 32'h0004; B = 32'h0008; CTRL = 4'b0011;
-          #1 A = 32'hFFF000; B = 32'h000A; CTRL = 4'b0100;
           #1 A = 32'hFFF000; B = 32'h000A; CTRL = 4'b0101;
           #1 A = 32'hFFFFFFFF; B = 32'hFFFF; CTRL = 4'b1101;
           #1 A = 32'hFFFFFFFF; B = 32'hFFFF; CTRL = 4'b0101;
+
+	 #1 $display("shift left, then shift right arithmetic, then shift right logical");
+	 #1 A = 32'h0000FFFF; B = 32'h0000000D; CTRL=4'b0100;
+	 #1 A = 32'hFFFF0000; B = 32'h0000000D; CTRL=4'b0110;
+	 #1 A = 32'hFFFF0000; B = 32'h0000000D; CTRL=4'b0111;
+
+	 #1 $display("set tests");
+	 #1 A = 32'h0000FFFF; B = 32'h0000FFFF; CTRL=4'b1000;
+	 #1 A = 32'h0000FFFF; B = 32'h0000000D; CTRL=4'b1001;
+	 #1 A = 32'h0000FFFF; B = 32'h0000000D; CTRL=4'b1010;
+	 #1 A = 32'h000000FF; B = 32'h00FFFFFF; CTRL=4'b1011;
+	 #1 A = 32'h0000FFFF; B = 32'h0000000D; CTRL=4'b1011;
+ 	 #1 A = 32'h0000FFFF; B = 32'h0000000D; CTRL=4'b1100;
+	 #1 A = 32'h0000FFFF; B = 32'h0000FFFF; CTRL=4'b1110;
     end
 endmodule // testbench

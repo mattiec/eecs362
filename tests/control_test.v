@@ -40,6 +40,16 @@ module control_test;
 	$display("lw");
 	#1 Instr = 32'hA0000000;
 	$display("sb"); 
+	
+	#1 Instr = 32'h00000029;
+	$display("sne");
+	#1 Instr = 32'h00000004;
+	$display("sll");
+	#1 Instr = 32'h00000013;
+	$display("nop");
+	#1 Instr = 32'h58000000;
+	$display("srli");
+
 
     end
 endmodule // testbench
