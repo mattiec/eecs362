@@ -33,5 +33,6 @@ module alu_test;
 	 #1 A = 32'h0000FFFF; B = 32'h0000000D; CTRL=4'b1011;
  	 #1 A = 32'h0000FFFF; B = 32'h0000000D; CTRL=4'b1100;
 	 #1 A = 32'h0000FFFF; B = 32'h0000FFFF; CTRL=4'b1110;
+	 #1 A = 32'h0000FFF0; B = 32'h0000FFFF; CTRL=4'b1110;
     end
 endmodule // testbench

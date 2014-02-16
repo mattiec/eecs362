@@ -1,4 +1,4 @@
-module seq(a,b,set);
+module seq(a,b,set); //ALUCtr = 1000
 	parameter width = 32;
 	input [0:width-1] a, b;
 	wire [0:width-1] out;
@@ -21,7 +21,7 @@ module seq(a,b,set);
 
 endmodule
 
-module sne(a,b,set);
+module sne(a,b,set);  //ALUCtr = 1001
 	parameter width = 32;
 	input [0:width-1] a,b;
 	wire [0:width-1] out;
@@ -39,7 +39,7 @@ module sne(a,b,set);
 	end
 endmodule
 
-module sge(a,b,set);
+module sge(a,b,set);  //ALUCtr = 1010
 	//set greater than or equal
 	parameter width = 32;
 	input [0:width-1] a,b;
@@ -59,7 +59,7 @@ module sge(a,b,set);
 	end
 endmodule
 
-module sle(a,b,set);
+module sle(a,b,set);  //ALUCtr = 1011
 
 	parameter width = 32;
 	input [0:width-1] a,b;
@@ -78,7 +78,7 @@ module sle(a,b,set);
 	end
 endmodule
 
-module sgt(a,b,set);
+module sgt(a,b,set);  //ALUCtr = 1100
 
 	parameter width = 32;
 	input [0:width-1] a,b;
@@ -97,7 +97,7 @@ module sgt(a,b,set);
 	end
 endmodule
 
-module slt(a,b,set);
+module slt(a,b,set);  //ALUCtr = 1110
 
 	parameter width = 32;
 	input [0:width-1] a,b;
