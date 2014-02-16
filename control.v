@@ -10,7 +10,7 @@ always@(instr)
 	assign MemWr = instr[0] & ~instr[1] & instr[2];   // opcode 101xxx
 	assign Mem2Reg = instr[0] & ~instr[1] & ~instr[2]; //opcode 100xxx
 	assign RegDst = ~ALUSrc;   //opcode 00000x
-	if (instr[0:2] == 3'b010 || instr[0:2] == 3'b101 || (instr[0:2] == 3'b000 && (instr[3] == 1 || instr[4] == 1))) begin 
+	if ((instr[0:4] == 5'b01001) || instr[0:2] == 3'b101 || (instr[0:2] == 3'b000 && instr[3] == 1)) begin 
 		if (instr[0:2] == 3'b101) begin  //store instruction	
 			Branch = 0;
 			Jump = 0;
@@ -23,8 +23,12 @@ always@(instr)
 		end
 		RegWr = 0;
 	end else begin
-		// operation that involves writing back to the register
-		RegWr = 1;
+		if (instr != 32'h00000013) begin 
+			RegWr = 1;
+		end else begin
+			RegWr = 0; //nop
+		end
+		// operation that involves writing back to the registe
 		Branch = 0;
 		Jump = 0;
 	end 
@@ -38,6 +42,15 @@ always@(instr)
 			6'b100100: ALUCtr = 4'b0000;
 			6'b100101: ALUCtr = 4'b0001;
 			6'b100110: ALUCtr = 4'b0010;
+			6'b101000: ALUCtr = 4'b1000; //seq
+			6'b101001: ALUCtr = 4'b1001; //sne
+			6'b101010: ALUCtr = 4'b1110; //slt
+			6'b101011: ALUCtr = 4'b1100; //sgt
+			6'b101100: ALUCtr = 4'b1011; //sle
+			6'b101101: ALUCtr = 4'b1010; //sge
+			6'b000100: ALUCtr = 4'b0100; //shift left
+			6'b000110: ALUCtr = 4'b0111; //shift right logical
+			6'b000111: ALUCtr = 4'b0110; //shift right arithmetic 
 		endcase
 	end else if (instr[0:5] == 6'b000001) begin //r-type floating point instruction
 			ALUCtr = 4'b0011; //mult
@@ -52,10 +65,19 @@ always@(instr)
 			6'b001100: ALUCtr = 4'b0000; //andi
 			6'b001101: ALUCtr = 4'b0001; //ori		
 			6'b001110: ALUCtr = 4'b0010; //xori
+			6'b010100: ALUCtr = 4'b0100; //slli
+			6'b010110: ALUCtr = 4'b0111; //srli
+			6'b010111: ALUCtr = 4'b0110; //srai
+			6'b011000: ALUCtr = 4'b1000; //seqi
+			6'b011001: ALUCtr = 4'b1001; //snei
+			6'b011010: ALUCtr = 4'b1110; //slti
+			6'b011011: ALUCtr = 4'b1100; //sgti
+			6'b011100: ALUCtr = 4'b1011; //slei
+			6'b011101: ALUCtr = 4'b1010; //sgei
 		endcase
 	end //end of r-type if statement
 
-	if (instr[0:5] == 6'b001001 || instr[0:5] == 6'b001011) begin
+	if (instr[0:5] == 6'b001001 || instr[0:5] == 6'b001011 || instr==32'h04000016) begin
 		ExtOp = 0;
 	end else begin
 		ExtOp = 1;
