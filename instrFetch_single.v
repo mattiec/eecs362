@@ -1,6 +1,6 @@
-module instrFetch(branch,jump,zero,branchInstruction,jumpInstruction,clock,reset,imemOut);
+module instrFetch(branchEqual,branchNE,jump,zero,branchInstruction,jumpInstruction,clock,reset,imemOut);
 parameter width = 30;
-input branch,jump,clock,zero,reset;
+input branchEqual,branchNE,jump,clock,zero,reset;
 input [0:25] jumpInstruction;
 input [0:15] branchInstruction;
 output [0:31] imemOut;
@@ -38,7 +38,7 @@ bitExtension signExtend(immediateExtension,extendedImmediate);
 
 fa_30bit add2(extendedImmediate,nextPC,0,nextPCout,cout1);
 
-assign andBranch = branch & zero;
+assign andBranch = (branchEqual & zero) | (branchNE & ~zero);
 
 mux2to130bit branchMUX(nextPC,nextPCout,andBranch,branchMUXout);
 
