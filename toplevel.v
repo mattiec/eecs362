@@ -1,4 +1,4 @@
-module toplevel(clk, rst, instruction)
+module toplevel(clk, rst)
 
 	input clk, rst;
 	
