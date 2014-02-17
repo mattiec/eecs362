@@ -1,9 +1,9 @@
 module mux2to1(a,b,sel,out);
 	parameter width = 32;
-	input [width-1:0] a,b;
+	input [0:width-1] a,b;
 	input sel;
 
-	output [width-1:0] out;
+	output [0:width-1] out;
 
 	assign out[0] = (a[0] & !sel) | (b[0] & sel);
 	assign out[1] = (a[1] & !sel) | (b[1] & sel);

@@ -6,7 +6,7 @@ reg reset;
 reg [8*80-1:0] filename;
 wire [0:31] PC;
 
-toplevel top(.clock(clock),.reset(reset));
+toplevel top(clock,reset);
 
 assign PC = {top.IFU.PCb,2'b00};
 
