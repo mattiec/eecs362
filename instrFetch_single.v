@@ -1,7 +1,8 @@
-module instrFetch(branch,jump,zero,instruction,clock,reset,imemOut);
+module instrFetch(branch,jump,zero,branchInstruction,jumpInstruction,clock,reset,imemOut);
 parameter width = 30;
 input branch,jump,clock,zero,reset;
-input [0:25] instruction;
+input [0:25] jumpInstruction;
+input [0:15] branchInstruction;
 output [0:31] imemOut;
 
 reg[0:29] regFile;
@@ -30,7 +31,7 @@ assign oneExtended[0:28]=29'h0000;
 
 fa_30bit add1(PCout,oneExtended,0,nextPC,cout2);
 
-assign immediateExtension[0:15] = instruction[0:15];
+assign immediateExtension[0:15] = branchInstruction[0:15];
 
 bitExtension signExtend(immediateExtension,extendedImmediate);
 
@@ -41,7 +42,7 @@ assign andBranch = branch & zero;
 
 mux2to130bit branchMUX(nextPC,nextPCout,andBranch,branchMUXout);
 
-assign immediate26[0:25] = instruction[0:25];
+assign immediate26[0:25] = jumpInstruction[0:25];
 assign immediate26[26:29] = PCout[28:31];
 
 mux2to130bit jumpMUX(branchMUXout,immediate26,jump,jumpMUXout);
