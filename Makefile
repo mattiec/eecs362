@@ -1,3 +1,6 @@
+SRC = unsignedsum.asm
+NAME = unsignedsum
+GEN =  instr_$(NAME).hex data_$(NAME).hex
 DLXASM = /vol/eecs362/scripts/dlxasm
 VERILOG = /vol/eecs362/iverilog/bin/iverilog
 
@@ -19,4 +22,8 @@ clean: ;
 	rm -f *o processor
 	rm -f *0 control
 
+files: instr_$(NAME).hex data_$(NAME).hex ;
+
+$(GEN): $(SRC) $(DLXASM) ;
+	$(DLXASM) -C instr_$(NAME).hex -D data_$(NAME).hex $(SRC)
 

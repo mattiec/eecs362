@@ -8,13 +8,13 @@ module control(instr, RegDst, RegWr, RegFp_Wr, RegFp_R, ALUCtr, ExtOp, ALUSrc, M
 always@(instr) begin
 
 	//will need ot change these two for the pipelined processor 
-	assign jump_instruction = instr[0:25];
-	assign branch_instruction = instr[0:15];
+	assign jump_instruction = instr[6:31];
+	assign branch_instruction = instr[15:31];
 
-	assign ALUSrc = instr[0] | instr[1] | instr[2] | instr[3] | instr[4];  //opcdoe 00000x
+	assign ALUSrc = instr[0] | instr[1] | instr[2];  //opcdoe 000xxx
 	assign MemWr = instr[0] & ~instr[1] & instr[2];   // opcode 101xxx
 	assign Mem2Reg = instr[0] & ~instr[1] & ~instr[2]; //opcode 100xxx
-	assign RegDst = ~ALUSrc;   //opcode 00000x
+	assign RegDst = ~(ALUSrc | instr[3] | instr[4]);   //opcode 00000x
 	if ((instr[0:4] == 5'b01001) || instr[0:2] == 3'b101 || (instr[0:2] == 3'b000 && instr[3] == 1)) begin 
 		if (instr[0:2] == 3'b101) begin  //store instruction	
 			Branch = 0;
@@ -68,7 +68,7 @@ always@(instr) begin
 		endcase
 	end else if (instr[0:5] == 6'b000001) begin //r-type floating point instruction
 			ALUCtr = 4'b0011; //mult
-	end else if (instr[0:1] == 3'b10) begin //load
+	end else if (instr[0:1] == 2'b10) begin //load or store
 			ALUCtr=4'b0101;
 	end else begin  // use opcode to determine ALUSrc signals
 		case (instr[0:5]) 

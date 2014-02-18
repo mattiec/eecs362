@@ -50,7 +50,7 @@ module dmem(addr, rData, wData, writeEnable, dsize, clk);
     // Read
     assign rData = {mem[addr], mem[addr+1], mem[addr+2], mem[addr+3]};
 endmodule // dmem
-
+/*
 // Test module. Loads data files
 module memload_example();
     parameter IMEMFILE = "instr.hex";
@@ -104,4 +104,4 @@ module memload_example();
         daddr = 32'h2001;
     end // initial
 endmodule
-
+*/
