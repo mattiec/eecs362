@@ -1,5 +1,5 @@
 
-module alu (a, b, ALUCtrl, out, zero_signal);
+module alu(a, b, ALUCtrl, out, zero_signal);
     parameter width = 32;
 
     input [0:width-1] a, b;

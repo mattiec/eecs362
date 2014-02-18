@@ -1,25 +1,38 @@
-module control(instr, RegDst, RegWr, RegFp_Wr, RegFp_R, ALUCtr, ExtOp, ALUSrc, MemWr, Mem2Reg, Branch, Jump);
+module control(instr, RegDst, RegWr, RegFp_Wr, RegFp_R, ALUCtr, ExtOp, ALUSrc, MemWr, Mem2Reg, Branch, Branch_NotEqual, Jump, branch_instruction, jump_instruction);
         input [0:31] instr;
-        output reg RegDst, RegWr, RegFp_Wr,RegFp_R, ExtOp, ALUSrc, MemWr, Mem2Reg, Branch, Jump;
+        output reg RegDst, RegWr, RegFp_Wr,RegFp_R, ExtOp, ALUSrc, MemWr, Mem2Reg, Branch, Branch_NotEqual, Jump;
+	output reg [0:25] jump_instruction;
+	output reg [0:15] branch_instruction;
 	output reg [0:3] ALUCtr;
 	
-always@(instr)
-        begin
+always@(instr) begin
 
-	assign ALUSrc = instr[0] | instr[1] | instr[2] | instr[3] | instr[4];  //opcdoe 00000x
+	//will need ot change these two for the pipelined processor 
+	assign jump_instruction = instr[6:31];
+	assign branch_instruction = instr[15:31];
+
+	assign ALUSrc = instr[0] | instr[1] | instr[2];  //opcdoe 000xxx
 	assign MemWr = instr[0] & ~instr[1] & instr[2];   // opcode 101xxx
 	assign Mem2Reg = instr[0] & ~instr[1] & ~instr[2]; //opcode 100xxx
-	assign RegDst = ~ALUSrc;   //opcode 00000x
+	assign RegDst = ~(ALUSrc | instr[3] | instr[4]);   //opcode 00000x
 	if ((instr[0:4] == 5'b01001) || instr[0:2] == 3'b101 || (instr[0:2] == 3'b000 && instr[3] == 1)) begin 
 		if (instr[0:2] == 3'b101) begin  //store instruction	
 			Branch = 0;
+			Branch_NotEqual = 0;
 			Jump = 0;
 		end else if (instr[0]==0 && instr[1]==0 && instr[2]==0 && instr[3]==1) begin  //opcode 0001xx  branch instruction
-			Branch = 1;
+			if (instr[5] == 0) begin
+				Branch = 1;
+				Branch_NotEqual = 0;
+			end else begin 
+				Branch = 0;
+				Branch_NotEqual = 1;
+			end
 			Jump = 0;
 		end else begin   // jump instr
-			Branch = 1;
 			Jump = 1;
+			Branch = 0;
+			Branch_NotEqual = 0;
 		end
 		RegWr = 0;
 	end else begin
@@ -30,6 +43,7 @@ always@(instr)
 		end
 		// operation that involves writing back to the registe
 		Branch = 0;
+		Branch_NotEqual = 0;
 		Jump = 0;
 	end 
 
@@ -54,7 +68,7 @@ always@(instr)
 		endcase
 	end else if (instr[0:5] == 6'b000001) begin //r-type floating point instruction
 			ALUCtr = 4'b0011; //mult
-	end else if (instr[0:1] == 3'b10) begin //load
+	end else if (instr[0:1] == 2'b10) begin //load or store
 			ALUCtr=4'b0101;
 	end else begin  // use opcode to determine ALUSrc signals
 		case (instr[0:5]) 
