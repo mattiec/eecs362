@@ -40,6 +40,20 @@ module mux2to1(a,b,sel,out);
 	
 endmodule
 
+module mux2to1_5bits(a,b,sel,out); 
+parameter width = 5;
+        input [0:width-1] a,b;
+        input sel;
+
+        output [0:width-1] out;
+
+        assign out[0] = (a[0] & !sel) | (b[0] & sel);
+        assign out[1] = (a[1] & !sel) | (b[1] & sel);
+        assign out[2] = (a[2] & !sel) | (b[2] & sel);
+        assign out[3] = (a[3] & !sel) | (b[3] & sel);
+        assign out[4] = (a[4] & !sel) | (b[4] & sel);
+endmodule
+
 module mux4to1(a,b,c,d,sel,out);
 	parameter width = 32;
 	input [width-1:0] a,b,c,d;

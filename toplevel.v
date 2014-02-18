@@ -27,12 +27,16 @@ module toplevel(clk, rst);
 	wire [0:31] ExtOut;
 	
 	wire [0:31] MemOut;
+
+	wire tmp;
+
+	assign tmp = 0;
 	
 		instrFetch instructionfetch(Branch, Branch_NotEqual, Jump, Zero, branch_instruction, jump_instruction, clk, rst,instruction);
 
 		control controlUnit (instruction, RegDst, RegWr, RegFp_write, RegFp_read, ALUCtr, ExtOp, ALUSrc, MemWr, Mem2Reg, Branch, Branch_NotEqual, Jump, branch_instruction, jump_instruction);
 			
-		mux2to1 regDstMUX(RT, RD,RegDst,WrAddr);
+		mux2to1_5bits regDstMUX(RT, RD,RegDst,WrAddr);
 		regFile rFile(rst, clk, RegFp_write, RegFp_read, WrAddr, RegWr, busWr, RS, RT, busA, busB);
 	
 		extender signExtender(immed,ExtOp, ExtOut); 
