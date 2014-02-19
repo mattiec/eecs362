@@ -1,10 +1,11 @@
-module instrFetch(branchEqual,branchNE,jumpInput,jump,jump2,JALcheck,zero,branchInstruction,jumpInstruction,clock,reset,imemOut);
+module instrFetch(branchEqual,branchNE,jumpInput,jump,jump2,JALcheck,zero,branchInstruction,jumpInstruction,clock,reset,imemOut,PCoutput);
 parameter width = 30;
 input branchEqual,branchNE,jump,jump2,JALcheck,clock,zero,reset;
 input [0:23] jumpInstruction;
 input [0:15] branchInstruction;
 input [0:29] jumpInput;
 output [0:31] imemOut;
+output [0:31] PCoutput;
 
 reg[0:29] regFile;
 
@@ -41,6 +42,10 @@ assign twoExtended[0:28]=29'h0000;
 mux2to130bit JALmux(oneExtended,twoExtended,JALcheck,addValue);
 
 fa_30bit add1(PCout,oneExtended,0,nextPC,cout2);
+
+assign PCoutput[0:29] = nextPC[0:29]
+assign PCoutput[30] = 0;
+assign PCoutput[31] = 0;
 
 assign immediateExtension[0:15] = branchInstruction[0:15];
 
