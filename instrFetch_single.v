@@ -36,14 +36,14 @@ PipeReg programCounter(PCout,PCin,clock,reset);
 assign oneExtended[29] = 1;
 assign oneExtended[0:28]=29'h0000;
 
-assign twoExtended[29] = 2;
-assign twoExtended[0:28]=29'h0000;
+assign twoExtended[28:29] = 2'b10;
+assign twoExtended[0:27]=28'h0000;
 
 mux2to130bit JALmux(oneExtended,twoExtended,JALcheck,addValue);
 
-fa_30bit add1(PCout,oneExtended,0,nextPC,cout2);
+fa_30bit add1(PCout,addValue,0,nextPC,cout2);
 
-assign PCoutput[0:29] = nextPC[0:29]
+assign PCoutput[0:29] = nextPC[0:29];
 assign PCoutput[30] = 0;
 assign PCoutput[31] = 0;
 

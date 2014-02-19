@@ -1,6 +1,6 @@
-module control(instr, RegDst, RegWr, RegFp_Wr, RegFp_R, ALUCtr, ExtOp, ALUSrc, MemWr, Mem2Reg, Branch, Branch_NotEqual, Jump, Jump_Reg, branch_instruction, jump_instruction);
+module control(instr, RegDst, RegWr, RegFp_Wr, RegFp_R, ALUCtr, ExtOp, ALUSrc, MemWr, Mem2Reg, Branch, Branch_NotEqual, Jump, Jump_Reg, Jump_Link, branch_instruction, jump_instruction);
         input [0:31] instr;
-        output reg RegDst, RegWr, RegFp_Wr,RegFp_R, ExtOp, ALUSrc, MemWr, Mem2Reg, Branch, Branch_NotEqual, Jump, Jump_Reg;
+        output reg RegDst, RegWr, RegFp_Wr,RegFp_R, ExtOp, ALUSrc, MemWr, Mem2Reg, Branch, Branch_NotEqual, Jump, Jump_Reg, Jump_Link;
 	output reg [0:23] jump_instruction;
 	output reg [0:15] branch_instruction;
 	output reg [0:3] ALUCtr;
@@ -20,12 +20,14 @@ always@(instr) begin
 	assign MemWr = instr[0] & ~instr[1] & instr[2];   // opcode 101xxx
 	assign Mem2Reg = instr[0] & ~instr[1] & ~instr[2]; //opcode 100xxx
 	assign RegDst = ~(ALUSrc | instr[3] | instr[4]);   //opcode 00000x
-	if ((instr[0:4] == 5'b01001) || instr[0:2] == 3'b101 || (instr[0:2] == 3'b000 && instr[3] == 1)) begin 
+	if (instr[0:4] == 5'b01001 || instr[0:2] == 3'b101 || (instr[0:2] == 3'b000 && (instr[3:4] == 2'b01|| instr[3] == 1))) begin 
 		if (instr[0:2] == 3'b101) begin  //store instruction	
 			Branch = 0;
 			Branch_NotEqual = 0;
 			Jump = 0;
 			Jump_Reg = 0;
+			Jump_Link = 0;
+			RegWr = 0;
 		end else if (instr[0]==0 && instr[1]==0 && instr[2]==0 && instr[3]==1) begin  //opcode 0001xx  branch instruction
 			if (instr[5] == 0) begin
 				Branch = 1;
@@ -36,18 +38,28 @@ always@(instr) begin
 			end
 			Jump = 0;
 			Jump_Reg = 0;
+			Jump_Link = 0;
+			RegWr = 0;
 		end else if (instr[0:4] == 5'b01001) begin
 			Jump = 0;
 			Jump_Reg = 1;
+			Jump_Link = 0;
 			Branch = 0;
 			Branch_NotEqual = 0;
+			RegWr = 0;
 		end else begin   // jump instr
+			if (instr[5] == 1) begin
+				Jump_Link = 1; //JAL
+				RegWr = 1;
+			end else begin
+				RegWr = 0;
+				Jump_Link = 0;
+			end
 			Jump = 1;
 			Jump_Reg = 0;
 			Branch = 0;
 			Branch_NotEqual = 0;
 		end
-		RegWr = 0;
 	end else begin
 		if (instr != 32'h00000013) begin 
 			RegWr = 1;
@@ -59,6 +71,7 @@ always@(instr) begin
 		Branch_NotEqual = 0;
 		Jump = 0;
 		Jump_Reg = 0;
+		Jump_Link = 0;
 	end 
 
         if (instr[0:5] == 6'b000000) begin // r-type integer instruction

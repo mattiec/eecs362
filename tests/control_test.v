@@ -1,14 +1,14 @@
 module control_test;
       reg [0:31] Instr;
-      output REGDST, REGWR, REGFP_WR, REGFP_R, EXTOP, ALUSRC,MEMWR, MEM2REG, BRANCH, BRANCH_NOTEQUAL, JUMP, JUMP_REG;
+      output REGDST, REGWR, REGFP_WR, REGFP_R, EXTOP, ALUSRC,MEMWR, MEM2REG, BRANCH, BRANCH_NOTEQUAL, JUMP, JUMP_REG, JUMP_LINK;
       output [0:3] ALUCTR;
       output [0:15] BINSTR;
       output [0:23] JINSTR;
 
-      control  ctr_signals(Instr,REGDST, REGWR, REGFP_WR, REGFP_R, ALUCTR, EXTOP, ALUSRC,MEMWR, MEM2REG, BRANCH, BRANCH_NOTEQUAL, JUMP,JUMP_REG,BINSTR, JINSTR);
+      control  ctr_signals(Instr,REGDST, REGWR, REGFP_WR, REGFP_R, ALUCTR, EXTOP, ALUSRC,MEMWR, MEM2REG, BRANCH, BRANCH_NOTEQUAL, JUMP,JUMP_REG,JUNP_LINK, BINSTR, JINSTR);
 
     initial begin
-          $monitor("instr=%b RegDst=%b RegWr=%b RegFp_Wr=%b Regfp_R=%b ExtOp=%b ALUSrc=%b MemWr=%b Mem2Reg=%b Branch=%b Branch_NotEqual=%b Jump=%b Jump_Reg=%b ALUCtr=%b", Instr, REGDST, REGWR, REGFP_WR, REGFP_R, EXTOP, ALUSRC,MEMWR, MEM2REG, BRANCH, BRANCH_NOTEQUAL, JUMP, JUMP_REG, ALUCTR);    
+          $monitor("instr=%b RegDst=%b RegWr=%b RegFp_Wr=%b Regfp_R=%b ExtOp=%b ALUSrc=%b MemWr=%b Mem2Reg=%b Branch=%b Branch_NotEqual=%b Jump=%b Jump_Reg=%b Jump_Link=%b ALUCtr=%b", Instr, REGDST, REGWR, REGFP_WR, REGFP_R, EXTOP, ALUSRC,MEMWR, MEM2REG, BRANCH, BRANCH_NOTEQUAL, JUMP, JUMP_REG, ALUCTR);    
 	#0 Instr = 32'h00000000;
 	#1
 	//r-type instruction
