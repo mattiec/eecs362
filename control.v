@@ -88,6 +88,8 @@ always@(instr) begin
 			6'b011011: ALUCtr = 4'b1100; //sgti
 			6'b011100: ALUCtr = 4'b1011; //slei
 			6'b011101: ALUCtr = 4'b1010; //sgei
+			6'b000100: ALUCtr = 4'b1101; //beqz
+			6'b000101: ALUCtr = 4'b1101; //bnez
 		endcase
 	end //end of r-type if statement
 
@@ -97,13 +99,13 @@ always@(instr) begin
 		ExtOp = 1;
 	end
 
-	if (instr[26:31] == 6'b110100) begin
+	if (instr[0:5] == 6'b000000 && instr[26:31] == 6'b110100) begin
 		RegFp_R = 1;
 	end else begin
 		RegFp_R = 0;
 	end
 
-	if (instr[26:31] == 6'b110101) begin
+	if (instr[0:5] == 6'b000000 && instr[26:31] == 6'b110101) begin
 		RegFp_Wr <= 1;
 	end else begin
 		RegFp_Wr <= 0;
