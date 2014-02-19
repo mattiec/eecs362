@@ -32,7 +32,7 @@ module toplevel(clk, rst);
 
 	assign tmp = 0;
 	
-		instrFetch instructionfetch(Branch, Branch_NotEqual, Jump, Zero, branch_instruction, jump_instruction, clk, rst,instruction);
+		instrFetch instructionfetch(Branch, Branch_NotEqual, Jump, Zero, branch_instruction, jump_instruction, clk, ~rst,instruction);
 
 		control controlUnit (instruction, RegDst, RegWr, RegFp_write, RegFp_read, ALUCtr, ExtOp, ALUSrc, MemWr, Mem2Reg, Branch, Branch_NotEqual, Jump, branch_instruction, jump_instruction);
 			
