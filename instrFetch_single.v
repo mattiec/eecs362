@@ -1,8 +1,9 @@
-module instrFetch(branchEqual,branchNE,jump,zero,branchInstruction,jumpInstruction,clock,reset,imemOut);
+module instrFetch(branchEqual,branchNE,jumpInput,jump,jump2,zero,branchInstruction,jumpInstruction,clock,reset,imemOut);
 parameter width = 30;
-input branchEqual,branchNE,jump,clock,zero,reset;
+input branchEqual,branchNE,jump,jump2,clock,zero,reset;
 input [0:25] jumpInstruction;
 input [0:15] branchInstruction;
+input [0:29] jumpInput;
 output [0:31] imemOut;
 
 reg[0:29] regFile;
@@ -16,6 +17,7 @@ wire andBranch;
 wire [0:29] extendedImmediate;
 wire [0:29] branchMUXout;
 wire [0:29] jumpMUXout;
+wire [0:29] jumpMUXoutFinal;
 wire [0:29] nextPC;
 wire [0:29] nextPCout;
 wire [0:29] secondValue;
@@ -23,6 +25,8 @@ wire cout2;
 wire cout1;
 wire [0:29] oneExtended;
 wire [0:29] PCout;
+wire [0:29] finalJumpOut;
+
 
 PipeReg programCounter(PCout,PCin,clock,reset);
 
@@ -47,9 +51,9 @@ assign immediate26[26:29] = PCout[28:31];
 
 mux2to130bit jumpMUX(branchMUXout,immediate26,jump,jumpMUXout);
 
-//assign PCin[0] = 0;
-//assign PCin[1] = 0;
-assign PCin[0:29]=jumpMUXout[0:29];
+mux2to130bit jumpMUX2(jumpMUXout,jumpInput,jump2,jumpMUXoutFinal);
+
+assign PCin[0:29]=jumpMUXoutFinal[0:29];
 
 assign imemAddr[31] = 0;
 assign imemAddr[30] = 0;
