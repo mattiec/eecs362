@@ -1,6 +1,6 @@
-module instrFetch(branchEqual,branchNE,jumpInput,jump,jump2,zero,branchInstruction,jumpInstruction,clock,reset,imemOut);
+module instrFetch(branchEqual,branchNE,jumpInput,jump,jump2,JALcheck,zero,branchInstruction,jumpInstruction,clock,reset,imemOut);
 parameter width = 30;
-input branchEqual,branchNE,jump,jump2,clock,zero,reset;
+input branchEqual,branchNE,jump,jump2,JALcheck,clock,zero,reset;
 input [0:23] jumpInstruction;
 input [0:15] branchInstruction;
 input [0:29] jumpInput;
@@ -24,6 +24,8 @@ wire [0:29] secondValue;
 wire cout2;
 wire cout1;
 wire [0:29] oneExtended;
+wire [0:29] twoExtended;
+wire [0:29] addValue;
 wire [0:29] PCout;
 wire [0:29] finalJumpOut;
 
@@ -32,6 +34,11 @@ PipeReg programCounter(PCout,PCin,clock,reset);
 
 assign oneExtended[29] = 1;
 assign oneExtended[0:28]=29'h0000;
+
+assign twoExtended[29] = 2;
+assign twoExtended[0:28]=29'h0000;
+
+mux2to130bit JALmux(oneExtended,twoExtended,JALcheck,addValue);
 
 fa_30bit add1(PCout,oneExtended,0,nextPC,cout2);
 
