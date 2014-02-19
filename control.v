@@ -1,14 +1,14 @@
-module control(instr, RegDst, RegWr, RegFp_Wr, RegFp_R, ALUCtr, ExtOp, ALUSrc, MemWr, Mem2Reg, Branch, Branch_NotEqual, Jump, branch_instruction, jump_instruction);
+module control(instr, RegDst, RegWr, RegFp_Wr, RegFp_R, ALUCtr, ExtOp, ALUSrc, MemWr, Mem2Reg, Branch, Branch_NotEqual, Jump, Jump_Reg, branch_instruction, jump_instruction);
         input [0:31] instr;
-        output reg RegDst, RegWr, RegFp_Wr,RegFp_R, ExtOp, ALUSrc, MemWr, Mem2Reg, Branch, Branch_NotEqual, Jump;
-	output reg [0:25] jump_instruction;
+        output reg RegDst, RegWr, RegFp_Wr,RegFp_R, ExtOp, ALUSrc, MemWr, Mem2Reg, Branch, Branch_NotEqual, Jump, Jump_Reg;
+	output reg [0:23] jump_instruction;
 	output reg [0:15] branch_instruction;
 	output reg [0:3] ALUCtr;
 	
 always@(instr) begin
 
 	//will need ot change these two for the pipelined processor 
-	assign jump_instruction[0:25] = instr[6:31];
+	assign jump_instruction[0:23] = instr[6:29];	
 
 	if (instr[16] == 0) begin
 		assign branch_instruction[0:15] = {2'b00, instr[16:29]};
@@ -25,6 +25,7 @@ always@(instr) begin
 			Branch = 0;
 			Branch_NotEqual = 0;
 			Jump = 0;
+			Jump_Reg = 0;
 		end else if (instr[0]==0 && instr[1]==0 && instr[2]==0 && instr[3]==1) begin  //opcode 0001xx  branch instruction
 			if (instr[5] == 0) begin
 				Branch = 1;
@@ -34,8 +35,15 @@ always@(instr) begin
 				Branch_NotEqual = 1;
 			end
 			Jump = 0;
+			Jump_Reg = 0;
+		end else if (instr[0:4] == 5'b01001) begin
+			Jump = 0;
+			Jump_Reg = 1;
+			Branch = 0;
+			Branch_NotEqual = 0;
 		end else begin   // jump instr
 			Jump = 1;
+			Jump_Reg = 0;
 			Branch = 0;
 			Branch_NotEqual = 0;
 		end
@@ -50,6 +58,7 @@ always@(instr) begin
 		Branch = 0;
 		Branch_NotEqual = 0;
 		Jump = 0;
+		Jump_Reg = 0;
 	end 
 
         if (instr[0:5] == 6'b000000) begin // r-type integer instruction

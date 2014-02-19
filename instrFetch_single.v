@@ -1,7 +1,7 @@
 module instrFetch(branchEqual,branchNE,jumpInput,jump,jump2,zero,branchInstruction,jumpInstruction,clock,reset,imemOut);
 parameter width = 30;
 input branchEqual,branchNE,jump,jump2,clock,zero,reset;
-input [0:25] jumpInstruction;
+input [0:23] jumpInstruction;
 input [0:15] branchInstruction;
 input [0:29] jumpInput;
 output [0:31] imemOut;
@@ -46,8 +46,8 @@ assign andBranch = (branchEqual & zero) | (branchNE & ~zero);
 
 mux2to130bit branchMUX(nextPC,nextPCout,andBranch,branchMUXout);
 
-assign immediate26[0:25] = jumpInstruction[0:25];
-assign immediate26[26:29] = PCout[28:31];
+assign immediate26[6:29] = jumpInstruction[0:23];
+assign immediate26[0:5] = PCout[0:5];
 
 mux2to130bit jumpMUX(branchMUXout,immediate26,jump,jumpMUXout);
 

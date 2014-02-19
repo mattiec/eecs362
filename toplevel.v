@@ -14,12 +14,12 @@ module toplevel(clk, rst);
 	
 	wire [0:31] busA, busB, busWr; 				//register file signals
 	wire [0:4] RS, RT, WrAddr, RD;			//regster file signals
-	wire RegDst, RegWr, Branch, Branch_NotEqual, Jump, Zero;
+	wire RegDst, RegWr, Branch, Branch_NotEqual, Jump, Jump_Reg, Zero;
 	wire [0:3] ALUCtr;
 	wire ALUSrc, ExtOp, MemWr, Mem2Reg, RegFp_write, RegFp_read; //Control Signals
 	wire [0:31] bIN, ALUOut; //ALU signal
 
-	wire [0:25] jump_instruction;
+	wire [0:23] jump_instruction;
 	wire [0:15] branch_instruction;
 	
 	input [0:31] instruction; //make back to wire
@@ -32,9 +32,9 @@ module toplevel(clk, rst);
 
 	assign tmp = 0;
 	
-		instrFetch instructionfetch(Branch, Branch_NotEqual, Jump, Zero, branch_instruction, jump_instruction, clk, ~rst,instruction);
+		instrFetch instructionfetch(Branch, Branch_NotEqual, busA[0:29], Jump, Jump_Reg, Zero, branch_instruction, jump_instruction, clk, ~rst,instruction);
 
-		control controlUnit (instruction, RegDst, RegWr, RegFp_write, RegFp_read, ALUCtr, ExtOp, ALUSrc, MemWr, Mem2Reg, Branch, Branch_NotEqual, Jump, branch_instruction, jump_instruction);
+		control controlUnit (instruction, RegDst, RegWr, RegFp_write, RegFp_read, ALUCtr, ExtOp, ALUSrc, MemWr, Mem2Reg, Branch, Branch_NotEqual, Jump, Jump_Reg, branch_instruction, jump_instruction);
 			
 		mux2to1_5bits regDstMUX(RT, RD,RegDst,WrAddr);
 		regFile rFile(rst, clk, RegFp_write, RegFp_read, WrAddr, RegWr, busWr, RS, RT, busA, busB);
