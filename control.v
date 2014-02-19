@@ -8,9 +8,14 @@ module control(instr, RegDst, RegWr, RegFp_Wr, RegFp_R, ALUCtr, ExtOp, ALUSrc, M
 always@(instr) begin
 
 	//will need ot change these two for the pipelined processor 
-	assign jump_instruction = instr[6:31];
-	assign branch_instruction[0:15] = {2'b11, instr[16:29]};
-	
+	assign jump_instruction[0:25] = instr[6:31];
+
+	if (instr[16] == 0) begin
+		assign branch_instruction[0:15] = {2'b00, instr[16:29]};
+	end else begin
+		assign branch_instruction[0:15] = {2'b11, instr[16:29]};
+	end	
+
 	assign ALUSrc = instr[0] | instr[1] | instr[2];  //opcdoe 000xxx
 	assign MemWr = instr[0] & ~instr[1] & instr[2];   // opcode 101xxx
 	assign Mem2Reg = instr[0] & ~instr[1] & ~instr[2]; //opcode 100xxx
