@@ -20,7 +20,7 @@ toplevel: toplevel.v control regFile.v instrFetch_single.v;
 
 clean: ;
 	rm -f *o processor
-	rm -f *0 control
+	rm -f *o control
 
 files: instr_$(NAME).hex data_$(NAME).hex ;
 
