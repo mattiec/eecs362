@@ -9,8 +9,8 @@ always@(instr) begin
 
 	//will need ot change these two for the pipelined processor 
 	assign jump_instruction = instr[6:31];
-	assign branch_instruction = instr[15:31];
-
+	assign branch_instruction[0:15] = {2'b11, instr[16:29]};
+	
 	assign ALUSrc = instr[0] | instr[1] | instr[2];  //opcdoe 000xxx
 	assign MemWr = instr[0] & ~instr[1] & instr[2];   // opcode 101xxx
 	assign Mem2Reg = instr[0] & ~instr[1] & ~instr[2]; //opcode 100xxx
