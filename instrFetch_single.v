@@ -42,14 +42,13 @@ mux2to130bit JALmux(oneExtended,twoExtended,JALcheck,addValue);
 
 fa_30bit add1(PCout,addValue,0,nextPC,cout2);
 
-assign PCoutput[0:29] = nextPC[0:29];
-assign PCoutput[30] = 0;
-assign PCoutput[31] = 0;
+assign PCoutput[2:31] = nextPC[0:29];
+assign PCoutput[1] = 0;
+assign PCoutput[0] = 0;
 
 assign immediateExtension[0:15] = branchInstruction[0:15];
 
 bitExtension signExtend(immediateExtension,extendedImmediate);
-
 
 fa_30bit add2(extendedImmediate,nextPC,0,nextPCout,cout1);
 
@@ -59,7 +58,8 @@ mux2to130bit branchMUX(nextPC,nextPCout,andBranch,branchMUXout);
 
 assign immediate26[6:29] = jumpInstruction[0:23];
 assign immediate26[0:5] = PCout[0:5];
-	
+
+//needs to be added to pc --> not jump straight to immediate26
 mux2to130bit jumpMUX(branchMUXout,immediate26,jump,jumpMUXout);
 
 mux2to130bit jumpMUX2(jumpMUXout,jumpInput,jump2,jumpMUXoutFinal);

@@ -7,7 +7,7 @@ module control(instr, RegDst, RegWr, RegFp_Wr, RegFp_R, ALUCtr, ExtOp, ALUSrc, M
 	
 always@(instr) begin
 
-	//will need ot change these two for the pipelined processor 
+	//will need to change these two for the pipelined processor 
 	assign jump_instruction[0:23] = instr[6:29];	
 	
 	if (instr[16] == 0) begin
