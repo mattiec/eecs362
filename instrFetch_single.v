@@ -34,10 +34,9 @@ wire [0:29] finalJumpOut;
 PipeReg programCounter(PCout,PCin,clock,reset);
 
 assign oneExtended[29] = 1;
-assign oneExtended[0:28]=29'h0000;
+assign oneExtended[0:28]=29'b0000;
 
-assign twoExtended[28:29] = 2'b10;
-assign twoExtended[0:27]=28'h0000;
+assign twoExtended = 30'h00000002;
 
 mux2to130bit JALmux(oneExtended,twoExtended,JALcheck,addValue);
 
