@@ -16,14 +16,17 @@ wire [0:29] PCin; //= 30'h0000;
 wire [0:31] imemAddr;
 wire andBranch;
 wire [0:29] extendedImmediate;
+wire [0:29] jumpInstructionExtended;
 wire [0:29] branchMUXout;
 wire [0:29] jumpMUXout;
 wire [0:29] jumpMUXoutFinal;
 wire [0:29] nextPC;
 wire [0:29] nextPCout;
 wire [0:29] secondValue;
+wire cout3;
 wire cout2;
 wire cout1;
+wire tmpCout;
 wire [0:29] oneExtended;
 wire [0:29] twoExtended;
 wire [0:29] addValue;
@@ -38,13 +41,14 @@ assign oneExtended[0:28]=29'b0000;
 
 assign twoExtended = 30'h00000002;
 
-mux2to130bit JALmux(oneExtended,twoExtended,JALcheck,addValue);
+//mux2to130bit JALmux(oneExtended,twoExtended,JALcheck,addValue);
 
-fa_30bit add1(PCout,addValue,0,nextPC,cout2);
+fa_30bit add1(PCout,oneExtended,0,nextPC,cout2);
 
-assign PCoutput[2:31] = nextPC[0:29];
-assign PCoutput[1] = 0;
-assign PCoutput[0] = 0;
+fa_30bit outputAdder(nextPC, oneExtended,0,PCoutput[0:29], cout3);
+//assign PCoutput[0:29] = nextPC[0:29];
+assign PCoutput[30] = 0;
+assign PCoutput[31] = 0;
 
 assign immediateExtension[0:15] = branchInstruction[0:15];
 
@@ -56,8 +60,10 @@ assign andBranch = (branchEqual & zero) | (branchNE & ~zero);
 
 mux2to130bit branchMUX(nextPC,nextPCout,andBranch,branchMUXout);
 
-assign immediate26[6:29] = jumpInstruction[0:23];
-assign immediate26[0:5] = PCout[0:5];
+//assign immediate26[6:29] = jumpInstruction[0:23];
+//assign immediate26[0:5] = PCout[0:5];
+bitExtensionJump signExtendJump(jumpInstruction[0:23], jumpInstructionExtended);
+fa_30bit jumpAdder(jumpInstructionExtended, nextPC, 0, immediate26, tmpCout);
 
 //needs to be added to pc --> not jump straight to immediate26
 mux2to130bit jumpMUX(branchMUXout,immediate26,jump,jumpMUXout);
@@ -124,8 +130,17 @@ module bitExtension(in,out);
 	end
 endmodule
 
-
-
+module bitExtensionJump(in, out); 
+	input [0:23] in;
+	output reg [0:29] out;
+	always@(in) begin
+		if (in[0] ==1) begin
+			out = {6'b111111, in};
+		end else begin
+			out = {6'b000000, in};
+		end
+	end
+endmodule
 
 module fa_30bit(a, b_in, cin, sum, cout);
         parameter width = 30;
