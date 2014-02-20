@@ -54,9 +54,9 @@ module toplevel(clk, rst);
 		mux2to1 MemToRegMUX(RegOut, MemOut, Mem2Reg, busWr);
 		
 		assign RS = instruction[6:10];
-                assign RT = instruction[11:15];
+        assign RT = instruction[11:15];
 
-                assign RD = instruction[16:20];
-                assign immed = instruction[16:31];
+        assign RD = instruction[16:20];
+        assign immed = instruction[16:31];
 
 endmodule

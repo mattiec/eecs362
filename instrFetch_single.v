@@ -59,7 +59,7 @@ mux2to130bit branchMUX(nextPC,nextPCout,andBranch,branchMUXout);
 
 assign immediate26[6:29] = jumpInstruction[0:23];
 assign immediate26[0:5] = PCout[0:5];
-
+	
 mux2to130bit jumpMUX(branchMUXout,immediate26,jump,jumpMUXout);
 
 mux2to130bit jumpMUX2(jumpMUXout,jumpInput,jump2,jumpMUXoutFinal);

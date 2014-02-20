@@ -1,6 +1,6 @@
 module control(instr, RegDst, RegWr, RegFp_Wr, RegFp_R, ALUCtr, ExtOp, ALUSrc, MemWr, Mem2Reg, Branch, Branch_NotEqual, Jump, Jump_Reg, Jump_Link, branch_instruction, jump_instruction);
-        input [0:31] instr;
-        output reg RegDst, RegWr, RegFp_Wr,RegFp_R, ExtOp, ALUSrc, MemWr, Mem2Reg, Branch, Branch_NotEqual, Jump, Jump_Reg, Jump_Link;
+    input [0:31] instr;
+    output reg RegDst, RegWr, RegFp_Wr,RegFp_R, ExtOp, ALUSrc, MemWr, Mem2Reg, Branch, Branch_NotEqual, Jump, Jump_Reg, Jump_Link;
 	output reg [0:23] jump_instruction;
 	output reg [0:15] branch_instruction;
 	output reg [0:3] ALUCtr;
@@ -9,7 +9,7 @@ always@(instr) begin
 
 	//will need ot change these two for the pipelined processor 
 	assign jump_instruction[0:23] = instr[6:29];	
-
+	
 	if (instr[16] == 0) begin
 		assign branch_instruction[0:15] = {2'b00, instr[16:29]};
 	end else begin
