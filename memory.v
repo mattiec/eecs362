@@ -24,7 +24,7 @@ module dmem(addr, rData, wData, writeEnable, dsize, clk);
     // Write
     always @ (posedge clk) begin
         if (writeEnable) begin
-            $display("writing to mem at %x val %x size %2d", addr, wData, dsize);
+            //$display("writing to mem at %x val %x size %2d", addr, wData, dsize); //uncomment for troubleshooting
             case (dsize)
               2'b11: begin
                  // word
