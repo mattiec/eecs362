@@ -26,7 +26,7 @@ module toplevel(clk, rst);
 	wire [0:15] immed;
 	wire [0:31] ExtOut;
 
-	wire [0:31] PCoutput;	
+
 	wire [0:31] MemOut, RegOut;
 
 	wire [0:4] reg31;
@@ -36,8 +36,33 @@ module toplevel(clk, rst);
 	assign reg31 = 5'b11111;
 	assign tmp = 0;
 	
-		instrFetch instructionfetch(Branch, Branch_NotEqual, busA[0:29], Jump, Jump_Reg, Jump_Link, Zero, branch_instruction, jump_instruction, clk, ~rst,instruction, PCoutput);
-
+	//start here (above may be removed if not used below)
+	
+	wire [0:31] PCout, PCin;	
+	wire [0:31] PCplus4, EXplusShift = 0;
+	
+	wire [0:63] IDout, IDin;
+	
+	
+	//to be added to control?
+	wire PCSrc; (?)
+	
+	wire cout1;
+	
+		//Instruction Fetch
+		PipeReg32 PC(PCout,PCin,clk,~rst);
+	
+		imem instrMem(PCout,imemOut);
+		fa Add4(PCout, 4, 0, PCplus4, cout1);
+		mux2to1 pcMUX(PCplus4,MEMout, PCSrc, PCin);
+		
+		IDin[0:31] = imemOut;
+		IDin[32:63] = PCplus4;
+	
+	
+		//Instruction Decoder
+		PipeReg64 ID(IDout, IDin, clk, ~rst);
+		
 		control controlUnit (instruction, RegDst, RegWr, RegFp_write, RegFp_read, ALUCtr, ExtOp, ALUSrc, MemWr, Mem2Reg, Branch, Branch_NotEqual, Jump, Jump_Reg, Jump_Link, branch_instruction, jump_instruction);
 			
 		mux2to1_5bits regDstMUX(RT, RD,RegDst,regWrAddr);
