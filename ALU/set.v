@@ -21,6 +21,29 @@ module seq(a,b,set); //ALUCtr = 1000
 
 endmodule
 
+module seq1bit(a,b,set); //ALUCtr = 1000
+	parameter width = 32;
+	input [0:width-1] a, b;
+	wire [0:width-1] out;
+	wire cout;
+	output reg set;
+
+//if cin is 1 in mux_sub, then it is subtractor
+
+	fa_32bit setEqual(a, b, 1, out, cout);
+	
+//the out of the fa 32 bit is the value we care about. disregard the cout.
+	
+	always @(out)
+	begin
+		if(out == 32'b0)
+			assign set = 1'b1;
+		else
+			assign set = 1'b0;
+	end
+
+endmodule
+
 module sne(a,b,set);  //ALUCtr = 1001
 	parameter width = 32;
 	input [0:width-1] a,b;

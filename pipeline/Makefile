@@ -1,5 +1,5 @@
 SRC = unsignedsum.asm
-NAME = unsigned
+iNAME = unsigned
 GEN =  instr_$(NAME).hex data_$(NAME).hex
 DLXASM = /vol/eecs362/scripts/dlxasm
 VERILOG = /vol/eecs362/iverilog/bin/iverilog
@@ -15,8 +15,8 @@ all: toplevel
 control: control.v tests/control_test.v;
 	${VERILOG} control.v tests/control_test.v -o control
 
-toplevel: toplevel_pp.v control regFile2.v instrFetch_pp.v; 
-	${VERILOG} toplevel_pp.v control.v 16bitTo32bitExtender.v memory.v instrFetch_pp.v tests/pipeline_tb.v -o pipeline
+toplevel: toplevel_pp.v control.v regFile2.v instrFetch_pp.v; 
+	${VERILOG} toplevel_pp.v control.v decoder.v 16bitTo32bitExtender.v memory.v pipereg.v instrFetch_pp.v tests/pp_tb.v -o pipeline
 
 clean: ;
 	rm -f *o pipeline
