@@ -15,7 +15,7 @@ module toplevel(clk, rst);
 	wire [0:31] four, two;
 
 	wire [0:31] PCout, PCin, PCin1;	
-	wire [0:31] PCplus4, EXplusShift, instruction, MEM_PCout;
+	wire [0:31] PCplus4, EXplusShift, instruction, Branch_PC;
 	wire PCSrc, PCSrc1, PCSrc2;
 
 
@@ -23,10 +23,10 @@ module toplevel(clk, rst);
 	wire [0:4] WrAddr, RS, RT, Rd;
 	wire [0:31] busWr, RData1, RData2;
 	wire [0:15] immed;
-	wire [0:31] ExtOut;
+	wire [0:31] ExtOut, Decoder_PC;
 	wire ALUSrc, ExtOp, MemWr, Mem2Reg, RegFp_write, RegFp_read;
 	wire RegDst, RegWr, Branch, Branch_NotEqual, Jump, Jump_Reg, Jump_Link, Zero;
-	wire [0:3] ALUCtr;
+	wire [0:3] ALUCtr, Exec_ALUctr;
 	wire [0:23] jump_instruction;
 	wire [0:31] jumpInstructionExtended, jumpimmediate;
 	wire [0:15] branch_instruction;
@@ -34,11 +34,12 @@ module toplevel(clk, rst);
 	
 
 	wire [0:192] EXin, EXout;
-	wire [0:31] notExtended, signExtended;
+	wire [0:31] Exec_immed;
 	wire [0:31] busA, busB, ALUinB, ALUout;
 	wire [0:4] RT2, RD2; 
-	wire [0:31] Exec_PC, Exec_PCplusShift;
+	wire [0:31] Exec_PC;
 	wire [0:4] reg31;
+	wire Exec_ALUSrc, Exec_RegDst;
 		
 
 	wire [0:105] MEMin, MEMout;
@@ -59,11 +60,8 @@ module toplevel(clk, rst);
 
 	imem instrMem(PCout,instruction);
 	fa_32bit Add4(PCout, four, 0, PCplus4, cout1);
-	mux2to1 pcBranchEqMUX(PCplus4,MEM_PCout, PCSrc, PCin1);
+	mux2to1 pcBranchEqMUX(PCplus4,Branch_PC, PCSrc, PCin); //PCin1
 
-	bitExtensionJump32 signExtendJump(jump_instruction, jumpInstructionExtended);
-	fa_32bit jumpAdder(jumpInstructionExtended, PCplus4, 0, jumpimmediate, cout3);
-	mux2to1 pcJumpMUX(PCin1,jumpimmediate, Jump, PCin);
 	
 	assign IDin[0:31] = instruction;
 	assign IDin[32:63] = PCplus4;
@@ -78,16 +76,14 @@ module toplevel(clk, rst);
 	assign RT = IDout[11:15];
 	assign RD = IDout[16:20];
 	assign immed = IDout[16:31];
+	assign Decoder_PC = IDout[32:63];
 
 	regFile2 rFile(rst, clk, RegFp_write, RegFp_read, WrAddr, RegWr2, busWr, RS, RT, RData1, RData2);
 	extender signExtender(immed,ExtOp, ExtOut); 
+	//shift shiftLeft2 (ExtOut, two, 00, signExtended);
+	fa_32bit AddShifted(Decoder_PC, ExtOut, 0, Branch_PC, cout2); //changed signExtended to ExtOut
 
 	seq1bit branchCompare(RData1, RData2, compareEq);
-
-	shift shiftLeft2 (ExtOut, two, 00, signExtended);
-	fa_32bit AddShifted(IDout[32:63], signExtended, 0, Exec_PCplusShift, cout2); 
-
-	assign MEM_PCout = Exec_PCplusShift;
 	assign PCSrc1 = Branch & compareEq; //AND branch and the zero flag
 	assign PCSrc2 = Branch_NotEqual & ~compareEq;
 	assign PCSrc = PCSrc1 | PCSrc2;
@@ -99,10 +95,10 @@ module toplevel(clk, rst);
 	assign EXin[4:7] = ALUCtr;
 	assign EXin[8] = ALUSrc;
 	assign EXin[9] = RegDst;
-	assign EXin[10:41] = IDout[32:63];
+	assign EXin[10:41] = Decoder_PC;
 	assign EXin[42:73] = RData1;
 	assign EXin[74:105] = RData2;
-	assign EXin[106:137] = ExtOut;
+	assign EXin[106:137] = immed;
 	assign EXin[138:142] = RT;
 	assign EXin[143:147] = RD;
 	assign EXin[148] = Jump;
@@ -116,21 +112,22 @@ module toplevel(clk, rst);
 	//Execute
 	PipeReg193 EX(EXout, EXin, clk, ~rst);
 
-	assign notExtended = EXout[106:137];
+	assign Exec_immed = EXout[106:137];
 	assign busA = EXout[42:73];
 	assign busB = EXout[74:105];
 	assign RT2 = EXout[138:142];
 	assign RD2 = EXout[142:147];
 	assign Exec_PC = EXout[10:41];
+	assign Exec_ALUctr = EXout[4:7];
+	assign Exec_ALUSrc = EXout[8];
+	assign Exec_RegDst = EXout[9];
 
-	mux2to1 aluMUX(busB, notExtended, EXout[8], ALUinB);
-	alu main_alu(busA, ALUinB, EXout[4:7], ALUout, Zero);
+	mux2to1 aluMUX(busB, Exec_immed, Exec_ALUSrc, ALUinB);
+	alu main_alu(busA, ALUinB, Exec_ALUctr, ALUout, Zero);
  
-	mux2to1_5bits regDstMUX(RT2, RD2,EXout[9],WrAddr);
-	//mux2to1_5bits regDSTJALMux(regWrAddr,reg31, Jump_Link, WrAddr);
+	mux2to1_5bits regDstMUX(RT2, RD2, Exec_RegDst, WrAddr);
 
 	assign MEMin[0:3] = EXout[0:3];
-	assign MEMin[4:35] = 32'b0; //Exec_PCplusShift; moving branch to decode phase
 	assign MEMin[36] = Zero;
 	assign MEMin[37:68] = ALUout;
 	assign MEMin[69:100] = busB;
@@ -140,7 +137,7 @@ module toplevel(clk, rst);
 	//Memory
 	PipeReg106 MEM(MEMout, MEMin, clk, ~rst);
 
-	//assign MEM_PCout = MEMout[4:35];
+	//assign Branch_PC = MEMout[4:35];
 	//assign PCSrc = MEMout[2] & MEMout[36]; //AND branch and the zero flag
 
 	dmem datamem(MEMout[37:68], WBin[2:33], MEMout[69:100], MEMout[3], 3, clk); //dsize = 3 (word)
