@@ -11,23 +11,23 @@ module shift(a, b, ctrl,out);
 	wire [0:31] rtmp0, rtmp1, rtmp2, rtmp3, rtmp4;
 	wire [0:31] rout1, rout2, rout3, rout4, rout5;
 
-	wire [0:16] log_or_arith;
+	wire [0:15] log_or_arith;
 	wire log;
 
 	//shift left if ctrl[0] == 1		
 	assign ltmp0 = {a[16:31],16'h0000};
 	mux2to1 shift_left1(a, ltmp0, b[27], lout1);
 
-	assign ltmp1 = {lout1[9:31], 8'h00};
+	assign ltmp1 = {lout1[8:31], 8'h00};
 	mux2to1 shift_left2(lout1, ltmp1, b[28], lout2);
 
-	assign ltmp2 = {lout2[5:31], 4'h0};
+	assign ltmp2 = {lout2[4:31], 4'h0};
 	mux2to1 shift_left3(lout2, ltmp2, b[29], lout3);
 
-	assign ltmp3 = {lout3[3:31], 2'b00};
+	assign ltmp3 = {lout3[2:31], 2'b00};
 	mux2to1 shift_left4(lout3, ltmp3, b[30], lout4);
 
-	assign ltmp4 = {lout4[2:31], 1'b0};
+	assign ltmp4 = {lout4[1:31], 1'b0};
 	mux2to1 shift_left5(lout4, ltmp4, b[31], lout5);
 
 

@@ -9,8 +9,8 @@ adder: adder.v  mux.v fa.v tests/adder_test.v;
 mult: mult.v fa.v tests/mult_test.v;
 	${VERILOG} mult.v fa.v tests/mult_test.v -o mult
 
-shift: shift.v tests/shift_test.v;
-	${VERILOG} shift.v tests/shift_test.v -o shift
+shift: shift.v mux.v tests/shift_test.v;
+	${VERILOG} shift.v mux.v tests/shift_test.v -o shift
 	
 basic: basic.v tests/basic_test.v;
 	${VERILOG} basic.v tests/basic_test.v -o basic
