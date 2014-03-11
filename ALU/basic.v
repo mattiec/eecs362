@@ -1,4 +1,4 @@
-module and32 (a, b, andRes);
+module and32 (a, b, andRes); // synopsys template
 	parameter width = 32;
 	
 	input [0:width-1] a, b;
@@ -10,7 +10,8 @@ endmodule
 
 
 
-module or32  (a, b, orRes);
+module or32  (a, b, orRes); // synopsys template
+
 	parameter width = 32;
 	
 	input [0:width-1] a, b;
@@ -23,7 +24,8 @@ endmodule
 
 
 
-module xor32  (a, b, xorRes);
+module xor32  (a, b, xorRes); // synopsys template
+
 	parameter width = 32;
 	
 	input [0:width-1] a, b;

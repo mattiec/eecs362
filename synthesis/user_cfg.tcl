@@ -20,7 +20,16 @@
 # ========== Copyright Header End ============================================
 source -echo -verbose project_sparc_cfg.tcl
 
-set rtl_files { /home/nch219/eecs362/eecs362/ALU/alu.v, /home/nch219/eecs362/eecs362/ALU/shift.v }
+set rtl_files { \
+	/home/nch219/eecs362/eecs362/ALU/alu.v \
+	/home/nch219/eecs362/eecs362/ALU/shift.v \
+	/home/nch219/eecs362/eecs362/ALU/adder.v \
+	/home/nch219/eecs362/eecs362/ALU/set.v \
+	/home/nch219/eecs362/eecs362/ALU/basic.v \
+	/home/nch219/eecs362/eecs362/ALU/fa.v \
+	/home/nch219/eecs362/eecs362/ALU/mult.v \
+	/home/nch219/eecs362/eecs362/ALU/mux.v \
+}
 
 set mix_files {}
 set top_module alu

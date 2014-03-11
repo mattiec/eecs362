@@ -1,5 +1,5 @@
 
-module fa_32bit(a, b_in, cin, sum, cout);
+module fa_32bit(a, b_in, cin, sum, cout); // synopsys template
 	parameter width = 32;
 	
 	input [0:width-1] a, b_in;
