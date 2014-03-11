@@ -13,7 +13,7 @@ module alu(a, b, ALUCtrl, out, zero_signal);
 
 	wire [0:width-1] shift_left, shift_right_arith, shift_right_logic;
 
-	wire cout;
+	wire cout, adder_out_zero;
 
 	assign tmp0110 = 32'h0;
 	assign tmp0111 = 32'h0;
@@ -22,6 +22,7 @@ module alu(a, b, ALUCtrl, out, zero_signal);
 
 	fa_32bit adder (a, b, ALUCtrl[0],adder_out, cout); //ALUCtrl[0] is cin, so 1 is subtract and 0 is addition 
 	assign sub_out = adder_out;
+	assign adder_out_zero = !(!adder_out);
 
 	and32 and1(a,b,and_out);
 	or32 or1(a,b,or_out);
@@ -32,12 +33,12 @@ module alu(a, b, ALUCtrl, out, zero_signal);
 	assign shift_right_arith = shift_left;
 	assign shift_right_logic = shift_left;
 	
-	seq seq1(a,b,SEQ); //SEL = 1000
-	sne sne1(a,b,SNE); //SEL = 1001
-	sge sge1(a,b,SGE); //SEL = 1010
-	sle sle1(a,b,SLE); //SEL = 1011
-	sgt sgt1(a,b,SGT); //SEL = 1100
-	slt slt1(a,b,SLT); //SEL = 1110
+	seq seq1(adder_out_zero,SEQ); //SEL = 1000
+	sne sne1(adder_out_zero,SNE); //SEL = 1001
+	sge sge1(cout,SGE); //SEL = 1010
+	sle sle1(adder_out_zero, cout, SLE); //SEL = 1011
+	sgt sgt1(adder_out_zero, cout, SGT); //SEL = 1100
+	slt slt1(cout,SLT); //SEL = 1110
 
 	mux16to1 out_mux(and_out, or_out, xor_out, mult_out, shift_left, adder_out, shift_right_arith, shift_right_logic, SEQ, SNE, SGE, SLE, SGT, sub_out, SLT, tmp1111, ALUCtrl,out);
 
