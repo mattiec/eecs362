@@ -20,10 +20,10 @@ module toplevel(clk, rst);
 
 
 	wire [0:63] IDout, IDin;
-	wire [0:4] WrAddr, RS, RT, Rd;
+	wire [0:4] WrAddr, RS, RT, RD, Exec_WrAddr;
 	wire [0:31] busWr, RData1, RData2;
 	wire [0:15] immed;
-	wire [0:31] ExtOut, Decoder_PC;
+	wire [0:31] ExtOut, Decoder_PC, ExtOut2;
 	wire ALUSrc, ExtOp, MemWr, Mem2Reg, RegFp_write, RegFp_read;
 	wire RegDst, RegWr, Branch, Branch_NotEqual, Jump, Jump_Reg, Jump_Link, Zero;
 	wire [0:3] ALUCtr, Exec_ALUctr;
@@ -43,10 +43,13 @@ module toplevel(clk, rst);
 		
 
 	wire [0:105] MEMin, MEMout;
+	wire [0:31] Mem_Addr, Mem_WrData, Mem_RData;
+	wire Mem_MemWr;
 
 
 	wire [0:70] WBin, WBout;
-	wire RegWr2; 
+	wire WB_RegWr, WB_Mem2Reg;
+	wire [0:31] WB_RData, WB_Addr; 
 
 
 	assign four = 32'b100;
@@ -62,26 +65,28 @@ module toplevel(clk, rst);
 	fa_32bit Add4(PCout, four, 0, PCplus4, cout1);
 	mux2to1 pcBranchEqMUX(PCplus4,Branch_PC, PCSrc, PCin); //PCin1
 
-	
-	assign IDin[0:31] = instruction;
+
+	assign IDin[0:31] = instruction; //
 	assign IDin[32:63] = PCplus4;
 
 
 	//Instruction Decoder
+	//IDout[0:31] - Instruction
+	//IDout[32:63] - PC plus4
 	PipeReg64 ID(IDout, IDin, clk, ~rst);
 	
 	control controlUnit (instruction, RegDst, RegWr, RegFp_write, RegFp_read, ALUCtr, ExtOp, ALUSrc, MemWr, Mem2Reg, Branch, Branch_NotEqual, Jump, Jump_Reg, Jump_Link, branch_instruction, jump_instruction);
-		
+	
 	assign RS = IDout[6:10];
 	assign RT = IDout[11:15];
 	assign RD = IDout[16:20];
-	assign immed = IDout[16:31];
+	assign immed = IDout[16:31];	
 	assign Decoder_PC = IDout[32:63];
 
-	regFile2 rFile(rst, clk, RegFp_write, RegFp_read, WrAddr, RegWr2, busWr, RS, RT, RData1, RData2);
+	regFile2 rFile(rst, clk, RegFp_write, RegFp_read, WrAddr, WB_RegWr, busWr, RS, RT, RData1, RData2);
 	extender signExtender(immed,ExtOp, ExtOut); 
-	//shift shiftLeft2 (ExtOut, two, 00, signExtended);
-	fa_32bit AddShifted(Decoder_PC, ExtOut, 0, Branch_PC, cout2); //changed signExtended to ExtOut
+	//fa_32bit AddBranchPC4(four, ExtOut, 0, ExtOut2, cout2);
+	fa_32bit AddShifted(Decoder_PC, ExtOut, 0, Branch_PC, cout2); 
 
 	seq1bit branchCompare(RData1, RData2, compareEq);
 	assign PCSrc1 = Branch & compareEq; //AND branch and the zero flag
@@ -110,6 +115,25 @@ module toplevel(clk, rst);
 	
 	
 	//Execute
+	//EXout[0] - Mem2Reg
+	//EXout[1] - RegWr
+	//EXout[2] - Branch
+	//EXout[3] - MemWr
+	//EXout[4:7] - ALUCtr
+	//EXout[8] - ALUSrc
+	//EXout[9] - RegDst
+	//EXout[10:41] - Decoder_PC
+	//EXout[42:73] - RData1
+	//EXout[74:105] - RData2
+	//EXout[106:137] - immed
+	//EXout[138:142] - RT
+	//EXout[143:147] - RD
+	//EXout[148] - Jump
+	//EXout[149] - Branch_NotEqual
+	//EXout[150] - Jump_Reg
+	//EXout[151] - Jump_Link
+	//EXout[152:167] - branch_instruction
+	//EXout[168:192] - jump_instruction
 	PipeReg193 EX(EXout, EXin, clk, ~rst);
 
 	assign Exec_immed = EXout[106:137];
@@ -135,20 +159,41 @@ module toplevel(clk, rst);
 
 	
 	//Memory
+	//MEMout[0] - Mem2Reg
+	//MEMout[1] - RegWr
+	//MEMout[2] - Branch
+	//MEMout[3] - MemWr
+	//MEMout[36] - Zero
+	//MEMout[37:68] - ALUout
+	//MEMout[69:100] busB;
+	//MEMout[101:105] - WrAddr
 	PipeReg106 MEM(MEMout, MEMin, clk, ~rst);
 
-	//assign Branch_PC = MEMout[4:35];
-	//assign PCSrc = MEMout[2] & MEMout[36]; //AND branch and the zero flag
+	assign Mem_Addr = MEMout[37:68];
+	assign Mem_WrData = MEMout[69:100];
+	assign Mem_MemWr = MEMout[3];
 
-	dmem datamem(MEMout[37:68], WBin[2:33], MEMout[69:100], MEMout[3], 3, clk); //dsize = 3 (word)
+	dmem datamem(Mem_Addr, Mem_RData, Mem_WrData, Mem_MemWr, 3, clk); //dsize = 3 (word)
 
 	assign WBin[0:1] = MEMout[0:1];
-	assign WBin[34:65] = MEMout[69:100];
-	assign WBin[66:70] = MEMout[101:105];
+	assign WBin[2:33] = Mem_RData;
+	assign WBin[34:65] = Mem_Addr;
+	assign WBin[66:70] = MEMout[101:105]; //Register WrAddr
 
 	
 	//Write Back
+	//WBout[0] - Mem2Reg
+	//WBout[1] - RegWr
+	//WBout[2:33] - Data read from memory
+	//WBout[34:65] - Address of data read from memory
+	//WBout[66:70] - Register Write Address
 	PipeReg71 WB(WBout, WBin, clk, ~rst);
-	assign RegWr2 = WBout[1];
+	
+	assign WB_Mem2Reg = WBout[0];
+	assign WB_RData = WBout[2:33];
+	assign WB_Addr = WBout[34:65];
+
+	mux2to1 wrBackMUX(WB_RData, WB_Addr, WB_Mem2Reg, busWr);
+	assign WB_RegWr = WBout[1];
 
 endmodule
