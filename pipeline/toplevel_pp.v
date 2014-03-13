@@ -34,6 +34,10 @@ module toplevel(clk, rst);
 	
 
 	wire [0:192] EXin, EXout;
+
+	wire [0:1] ForwardA, ForwardB;
+	wire [0:11] MuxAout, MuxBout;
+	
 	wire [0:31] Exec_immed;
 	wire [0:31] busA, busB, ALUinB, ALUout;
 	wire [0:4] RT2, RD2; 
