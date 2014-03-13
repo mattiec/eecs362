@@ -23,26 +23,32 @@ initial begin
 
   //Load IMEM from file
    if (!$value$plusargs("instrfile=%s", filename)) begin
-      filename = "instr_unsignedsum.hex";
+      filename = "instr_fib.hex";
    end
    $readmemh(filename, top.instrMem.mem);
   // Load DMEM from file
   if (!$value$plusargs("datafile=%s", filename)) begin 
-      filename = "data_unsignedsum.hex";
+      filename = "data_fib.hex";
   end
   $readmemh(filename, top.datamem.mem);
 
-//   $monitor("Instruction = %h  PC = %h\n\tIFU\n\t\tTarget = %h\n\t\ttakeBranch = %b\n\t\tjType = %b\n\t\treset = %b\n\t\tregJump = %b\n\t\tlinkTarget = %h\n\tDECODER\n\t\trs1 = %d\n\t\trs2 = %d\n\t\trd = %d\n\t\timmediate = %h\n\t\talu_signals = %b\n\t\tmem_size = %b\n\t\tmem_write = %b\n\t\tmem_ext = %b\n\t\treg_write = %b\n\t\tbranch_instr = %b\n\t\tjump_instr = %b\n\t\treg_data = %b\n\t\tI_type = %b\n\t\tbne = %b\n\t\tbeq = %b\n\t\tlink = %b\n\tREGISTERS\n\t\treg_data_in = %h\n\t\twrite_en = %b\n\t\taddr1 = %d\n\t\taddr2 = %d\n\t\twraddr = %d\n\t\tregA = %h\n\t\tregB = %h\n\tALU\n\t\tA = (HEX)%h   (DEC)%d\n\t\tB = (HEX)%h    (DEC)%d\n\t\talu_controls = %b\n\t\tzero = %b\n\t\talu_out = (HEX)%h    (DEC)%d\n\tDATA_MEMORY\n\t\taddr = %h\n\t\twData = %h\n\t\twriteEnable = %b\n\t\tdsize = %b\n\t\tmem_ext = %b\n\t\tdata_mem_out = %h\n\n",top.instruction,top.instructionfetch.PCout,top.instruction,top.Branch,top.jump_instruction,top.rst,top.Jump,top.instruction,top.RS,top.RT,top.RD,top.immed,top.ALUCtr,top.tmp,top.MemWr,top.tmp,top.RegWr,top.branch_instruction,top.jump_instruction,top.busWr,top.tmp,top.Branch_NotEqual,top.Branch,top.tmp,top.busWr,top.RegWr,top.RS,top.RT,top.WrAddr,top.busA,top.busB,top.busA,top.busA,top.bIN,top.bIN,top.ALUCtr,top.Zero,top.ALUOut,top.ALUOut,top.ALUOut,top.busB,top.MemWr,top.tmp,top.tmp,top.MemOut);
+//$monitor("Rst = %b Clk = %b; Instruct = %h PC = %h imm=%h target=%h PCplus4 =%h Branch_PC =%h PCSrc =%b rs =%d rt =%d rd = %d \nJump = %b Branch = %b compareEq= %b PCSrc1 = %b PCSrc2 = %b PCSrc = %b RData1 = %h RData2 = %h\n", top.rst, top.clk, top.instruction, top.PCout, top.immed, top.PCin, top.PCplus4, top.Branch_PC, top.PCSrc, top.RS, top.RT, top.RD, top.Jump, top.Branch, top.compareEq, top.PCSrc1, top.PCSrc2, top.PCSrc, top.RData1, top.RData2); 
+//$monitor("iFetch: Clk=%b instruction = %h PCout = %h PCin = %h PCplus4 = %h Branch_PC = %h PCSrc = %h/n",top.clk, top.Instruction, top.PCout, top.PCin, top.PCplus4, top.Branch_PC, top.PCSrc);
+//$monitor("Decoder: instruction = %h RegDst = %b RegWr = %b RegFp_write = %b ALUCtr = %b ExtOp = %b ALUSrc = %b MemWr = %b Mem2Reg = %b Branch = %b Branch_NotEqual = %b Jump = %b\n", top.instruction, top.RegDst, top.RegWr, top.RegFp_write, top.ALUCtr, top.ExtOp, top.ALUSrc, top.MemWr, top.Mem2Reg, top.Branch, top.Branch_NotEqual, top.Jump);
+//$monitor("Exec: Clock = %b; Instruction = %h PC = %h target=%h rs=%d rt=%d rd = %d imm=%h Exec_immed = %h \nbusB = %h Exec_ALUSrc = %b ALUinB = %h busA = %h ALUout = %h WrAddr =%h", top.clk, top.instruction, top.PCout, top.PCin, top.RS, top.RT, top.RD, top.immed, top.Exec_immed, top.busB, top.Exec_ALUSrc, top.ALUinB, top.busA, top.ALUout, top.WrAddr);
+//$monitor("Mem: Addr = %h RData = %h WrData = %h WrEn = %b", top.Mem_Addr, top.Mem_RData, top.Mem_WrData, top.Mem_MemWr);
+$monitor("Clock = %b; Instruction = %h PC = %h imm=%h target=%h rs=%d rt=%d rd = %d busA = %h busB = %h WrAddr = %h WB_RegWr = %h busWr = %h\nregister[1] = %h register[2] = %h register[3] = %h register[4] = %h", top.clk, top.instruction, top.PCout, top.immed, top.PCin, top.RS, top.RT, top.RD, top.RData1, top.RData2, top.WrAddr, top.WB_RegWr, top.busWr, top.rFile.ireg01.out, top.rFile.ireg02.out, top.rFile.ireg03.out, top.rFile.ireg04.out); 
 
-$monitor("Rst = %b Clk = %b; Instruct = %h PC = %h imm=%h target=%h rs=%d rt=%d rd = %d \nJump = %b Branch = %b compareEq= %b PCSrc1 = %b PCSrc2 = %b PCSrc = %b RData1 = %h RData2 = %h\n ExtOp = %b ExtOut = %h\n", top.rst, top.clk, top.instruction, top.PCout, top.immed, top.PCin, top.RS, top.RT, top.RD, top.Jump, top.Branch, top.compareEq, top.PCSrc1, top.PCSrc2, top.PCSrc, top.RData1, top.RData2, top.ExtOp, top.ExtOut); 
-	
-	iter=0;
+
+
+
+      iter=0;
 
    #0 clock=0; reset=0;
    #2 reset=1;
    #2 reset=0;
 
-   #5000 $finish;
+   #60 $finish; //changed from 5000 to 60
 end
 reg [0:31] instr;
 
