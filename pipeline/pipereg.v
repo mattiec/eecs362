@@ -1,5 +1,5 @@
-module PipeReg106(out, in, clk, rst); // synopsys template
-   parameter width = 106, init = 0;
+module PipeReg111(out, in, clk, rst); // synopsys template
+   parameter width = 111, init = 0;
    output [0:width-1] out;
    reg [0:width-1]    out;
    input [0:width-1]  in;
@@ -13,8 +13,8 @@ module PipeReg106(out, in, clk, rst); // synopsys template
 
 endmodule // PipeReg
 
-module PipeReg193(out, in, clk, rst); // synopsys template
-   parameter width = 193, init = 0;
+module PipeReg198(out, in, clk, rst); // synopsys template
+   parameter width = 198, init = 0;
    output [0:width-1] out;
    reg [0:width-1]    out;
    input [0:width-1]  in;
@@ -28,8 +28,8 @@ module PipeReg193(out, in, clk, rst); // synopsys template
 
 endmodule // PipeReg
 
-module PipeReg71(out, in, clk, rst); // synopsys template
-   parameter width = 71, init = 0;
+module PipeReg76(out, in, clk, rst); // synopsys template
+   parameter width = 76, init = 0;
    output [0:width-1] out;
    reg [0:width-1]    out;
    input [0:width-1]  in;

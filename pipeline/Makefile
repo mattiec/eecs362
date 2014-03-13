@@ -16,7 +16,7 @@ control: control.v tests/control_test.v;
 	${VERILOG} control.v tests/control_test.v -o control
 
 toplevel: toplevel_pp.v control.v regFile2.v instrFetch_pp.v; 
-	${VERILOG} toplevel_pp.v control.v decoder.v 16bitTo32bitExtender.v memory.v pipereg.v instrFetch_pp.v tests/pp_tb.v -o pipeline
+	${VERILOG} toplevel_pp.v control.v decoder.v 16bitTo32bitExtender.v memory.v pipereg.v tests/pp_tb.v -o pipeline
 
 clean: ;
 	rm -f *o pipeline

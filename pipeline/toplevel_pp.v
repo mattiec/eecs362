@@ -12,7 +12,7 @@ module toplevel(clk, rst);
 
 	input clk, rst;
 	wire cout1, cout2, cout3;
-	wire [0:31] four, two;
+	wire [0:31] four, two, zero0;
 
 	wire [0:31] PCout, PCin, PCin1;	
 	wire [0:31] PCplus4, EXplusShift, instruction, Branch_PC;
@@ -33,31 +33,37 @@ module toplevel(clk, rst);
 	wire compareEq;
 	
 
-	wire [0:192] EXin, EXout;
+	wire [0:197] EXin, EXout;
 
-	wire [0:1] ForwardA, ForwardB;
+	reg [0:1] ForwardA, ForwardB;
+	wire [0:31] ForwardAout,ForwardBout;
+
 	wire [0:11] MuxAout, MuxBout;
 	
 	wire [0:31] Exec_immed;
 	wire [0:31] busA, busB, ALUinB, ALUout;
-	wire [0:4] RT2, RD2; 
+	wire [0:4] RT2, RD2, RS2; 
 	wire [0:31] Exec_PC;
 	wire [0:4] reg31;
 	wire Exec_ALUSrc, Exec_RegDst;
 		
 
-	wire [0:105] MEMin, MEMout;
+	wire [0:4] RD3;
+	wire [0:110] MEMin, MEMout;
 	wire [0:31] Mem_Addr, Mem_WrData, Mem_RData;
 	wire Mem_MemWr;
 
 
-	wire [0:70] WBin, WBout;
+	wire [0:4] RD4;
+	wire EX_regWrite;
+	wire [0:75] WBin, WBout;
 	wire WB_RegWr, WB_Mem2Reg;
 	wire [0:31] WB_RData, WB_Addr; 
 
 
 	assign four = 32'b100;
 	assign two = 32'b10;
+	assign zero0 = 32'b0;
 	assign EXplusShift = 32'b0;
 	assign reg31 = 5'b11111;
 
@@ -116,6 +122,7 @@ module toplevel(clk, rst);
 	assign EXin[151] = Jump_Link;
 	assign EXin[152:167] = branch_instruction;
 	assign EXin[168:192] = jump_instruction;
+	assign EXin[193:197] = RS;
 	
 	
 	//Execute
@@ -138,28 +145,76 @@ module toplevel(clk, rst);
 	//EXout[151] - Jump_Link
 	//EXout[152:167] - branch_instruction
 	//EXout[168:192] - jump_instruction
-	PipeReg193 EX(EXout, EXin, clk, ~rst);
+	PipeReg198 EX(EXout, EXin, clk, ~rst);
 
 	assign Exec_immed = EXout[106:137];
 	assign busA = EXout[42:73];
 	assign busB = EXout[74:105];
 	assign RT2 = EXout[138:142];
 	assign RD2 = EXout[142:147];
+	assign RS2 = EXout[193:197];
 	assign Exec_PC = EXout[10:41];
 	assign Exec_ALUctr = EXout[4:7];
 	assign Exec_ALUSrc = EXout[8];
 	assign Exec_RegDst = EXout[9];
+	
+	//data forwarding
+	
+	always @(negedge clk) begin
 
-	mux2to1 aluMUX(busB, Exec_immed, Exec_ALUSrc, ALUinB);
-	alu main_alu(busA, ALUinB, Exec_ALUctr, ALUout, Zero);
+		assign ForwardA = 00;
+		assign ForwardB = 00;
+
+		//EX/MEM Hazard
+		if (EX_regWrite == 1'b1 & RD3 != 1'b0 & RD3 == RS2) begin
+			assign ForwardA = 2'b10;
+		end
+		if (EX_regWrite == 1'b1 & RD3 != 1'b0 & RD3 == RT2) begin
+			assign ForwardB = 2'b10;
+		end
+
+		//if (EX/MEM.RegWrite and (EX/MEM.RegisterRd!= 0)and (EX/MEM.RegisterRd= ID/EX.RegisterRs))
+		//	ForwardA= 10
+		//if (EX/MEM.RegWrite and (EX/MEM.RegisterRd!= 0)and (EX/MEM.RegisterRd= ID/EX.RegisterRt))
+		//	ForwardB = 10 
+
+
+		//MEM/WB Hazard
+
+		if (WB_RegWr == 1'b1 & RD4 != 1'b0 & RD3 != RS2 & RD4 == RS2) begin
+			assign ForwardA = 2'b01;
+		end
+		if (WB_RegWr == 1'b1 & RD4 != 1'b0 & RD3 != RT2 & RD4 == RT2) begin
+			assign ForwardB = 2'b01;
+		end
+	
+
+		//if (MEM/WB.RegWrite and (MEM/WB.RegisterRd!= 0)and (EX/MEM.RegisterRd!= ID/EX.RegisterRs)
+		//	and (MEM/WB.RegisterRd= ID/EX.RegisterRs))
+		//ForwardA= 01
+	
+		//if (MEM/WB.RegWrite and (MEM/WB.RegisterRd!= 0)and (EX/MEM.RegisterRd!= ID/EX.RegisterRt)
+		//	and (MEM/WB.RegisterRd= ID/EX.RegisterRt))
+		//ForwardB= 01 
+	end
+
+	mux4to1 SelectorA(busA,busWr,Mem_Addr,zero0,ForwardA,ForwardAout);
+	mux4to1 SelectorB(busB,busWr,Mem_Addr,zero0,ForwardB,ForwardBout);
+
+	mux2to1 aluMUX(ForwardBout, Exec_immed, Exec_ALUSrc,ALUinB);
+	alu main_alu(ForwardAout, ALUinB, Exec_ALUctr,ALUout,Zero);
+	//ORIGINAL 2TO1MUX and main_alu
+	//mux2to1 aluMUX(busB, Exec_immed, Exec_ALUSrc, ALUinB);
+	//alu main_alu(busA, ALUinB, Exec_ALUctr, ALUout, Zero);
  
 	mux2to1_5bits regDstMUX(RT2, RD2, Exec_RegDst, WrAddr);
 
 	assign MEMin[0:3] = EXout[0:3];
 	assign MEMin[36] = Zero;
 	assign MEMin[37:68] = ALUout;
-	assign MEMin[69:100] = busB;
+	assign MEMin[69:100] = ForwardBout; //need to submit this instead of busB for forwarding
 	assign MEMin[101:105] = WrAddr;
+	assign MEMin[106:110] = RD2;
 
 	
 	//Memory
@@ -171,19 +226,20 @@ module toplevel(clk, rst);
 	//MEMout[37:68] - ALUout
 	//MEMout[69:100] busB;
 	//MEMout[101:105] - WrAddr
-	PipeReg106 MEM(MEMout, MEMin, clk, ~rst);
+	PipeReg111 MEM(MEMout, MEMin, clk, ~rst);
 
 	assign Mem_Addr = MEMout[37:68];
 	assign Mem_WrData = MEMout[69:100];
 	assign Mem_MemWr = MEMout[3];
-
+	assign RD3 = MEMout[106:110];
+	assign EX_regWrite = MEMout[1];
 	dmem datamem(Mem_Addr, Mem_RData, Mem_WrData, Mem_MemWr, 3, clk); //dsize = 3 (word)
 
 	assign WBin[0:1] = MEMout[0:1];
 	assign WBin[2:33] = Mem_RData;
 	assign WBin[34:65] = Mem_Addr;
 	assign WBin[66:70] = MEMout[101:105]; //Register WrAddr
-
+	assign WBin[71:75] = RD3;
 	
 	//Write Back
 	//WBout[0] - Mem2Reg
@@ -191,8 +247,9 @@ module toplevel(clk, rst);
 	//WBout[2:33] - Data read from memory
 	//WBout[34:65] - Address of data read from memory
 	//WBout[66:70] - Register Write Address
-	PipeReg71 WB(WBout, WBin, clk, ~rst);
+	PipeReg76 WB(WBout, WBin, clk, ~rst);
 	
+	assign RD4 = WBout[71:75];
 	assign WB_Mem2Reg = WBout[0];
 	assign WB_RData = WBout[2:33];
 	assign WB_Addr = WBout[34:65];
