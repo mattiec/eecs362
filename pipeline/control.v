@@ -9,17 +9,19 @@ always@(instr) begin
 
 	//will need to change these two for the pipelined processor 
 	assign jump_instruction[0:23] = instr[6:29];	
-	
+
 	if (instr[16] == 0) begin
 		assign branch_instruction[0:15] = {2'b00, instr[16:29]};
 	end else begin
 		assign branch_instruction[0:15] = {2'b11, instr[16:29]};
 	end	
 
+
 	assign ALUSrc = instr[0] | instr[1] | instr[2];  //opcdoe 000xxx
 	assign MemWr = instr[0] & ~instr[1] & instr[2];   // opcode 101xxx
 	assign Mem2Reg = instr[0] & ~instr[1] & ~instr[2]; //opcode 100xxx
 	assign RegDst = ~(ALUSrc | instr[3] | instr[4]);   //opcode 00000x
+
 	if (instr[0:4] == 5'b01001 || instr[0:2] == 3'b101 || (instr[0:2] == 3'b000 && (instr[3:4] == 2'b01|| instr[3] == 1))) begin 
 		if (instr[0:2] == 3'b101) begin  //store instruction	
 			Branch = 0;
@@ -74,8 +76,9 @@ always@(instr) begin
 		Jump_Link = 0;
 	end 
 
-        if (instr[0:5] == 6'b000000) begin // r-type integer instruction
+	if (instr[0:5] == 6'b000000) begin // r-type integer instruction
 		case (instr[26:31]) 
+			6'b000000: ALUCtr = 4'b0000;
 			6'b100000: ALUCtr = 4'b0101; 	 
 			6'b100001: ALUCtr = 4'b0101;
 			6'b100010: ALUCtr = 4'b1101;
@@ -137,6 +140,8 @@ always@(instr) begin
 	end else begin
 		RegFp_Wr <= 0;
 	end
+
+//	end
  
 end//end always
 endmodule

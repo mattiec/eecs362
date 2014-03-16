@@ -74,3 +74,18 @@ module PipeReg32(out, in, clk, rst); // synopsys template
        out <= in;
 
 endmodule // PipeReg
+
+module PipeReg5(out, in, clk, rst); // synopsys template
+   parameter width = 5, init = 0;
+   output [0:width-1] out;
+   reg [0:width-1]    out;
+   input [0:width-1]  in;
+   input              clk, rst;
+
+   always @ (posedge clk or negedge rst)
+     if (~rst)
+       out <= init;
+     else
+       out <= in;
+
+endmodule // PipeReg
