@@ -148,21 +148,21 @@ module toplevel(clk, rst);
 		assign ForwardA = 00;
 		assign ForwardB = 00;
 
+		//MEM/WB hazard
+		if (WB_RegWr == 1'b1 & RD4 != 1'b0 & RD3 != RS2 & RD4 == RS2) begin
+                        assign ForwardA = 2'b01;
+                end
+                if (WB_RegWr == 1'b1 & RD4 != 1'b0 & RD3 != RT2 & RD4 == RT2) begin
+                        assign ForwardB = 2'b01;
+                end
+
+
 		//EX/MEM Hazard
 		if (EX_regWrite == 1'b1 & RD3 != 1'b0 & RD3 == RS2) begin
 			assign ForwardA = 2'b10;
 		end
 		if (EX_regWrite == 1'b1 & RD3 != 1'b0 & RD3 == RT2) begin
 			assign ForwardB = 2'b10;
-		end
-
-
-		//MEM/WB Hazard
-		if (WB_RegWr == 1'b1 & RD4 != 1'b0 & RD3 != RS2 & RD4 == RS2) begin
-			assign ForwardA = 2'b01;
-		end
-		if (WB_RegWr == 1'b1 & RD4 != 1'b0 & RD3 != RT2 & RD4 == RT2) begin
-			assign ForwardB = 2'b01;
 		end
 	end
 
