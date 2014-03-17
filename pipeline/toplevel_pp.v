@@ -32,6 +32,7 @@ module toplevel(clk, rst);
 	wire [0:31] jumpInstructionExtended, jumpimmediate;
 	wire [0:15] branch_instruction;
 	wire compareEq;
+	wire id_squash;
 	
 
 	wire [0:197] EXin, EXout;
@@ -97,6 +98,8 @@ module toplevel(clk, rst);
 	regFile2 rFile(rst, clk, RegFp_write, RegFp_read, WrAddr, WB_RegWr, busWr, RS, RT, RData1, RData2);
 	extender signExtender(immed,ExtOp, ExtOut); 
 	fa_32bit AddShifted(Decoder_PC, ExtOut, 0, Branch_PC, cout2); 
+
+	hazardDetect hazardDetection(RD2, RS, RT, ID_instruction[26:31], id_squash);
 
 	seq1bit branchCompare(RData1, RData2, compareEq);
 	assign PCSrc1 = Branch & compareEq;

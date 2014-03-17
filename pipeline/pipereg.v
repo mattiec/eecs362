@@ -18,7 +18,7 @@ module PipeReg198(out, in, clk, rst); // synopsys template
    output [0:width-1] out;
    reg [0:width-1]    out;
    input [0:width-1]  in;
-   input              clk, rst;
+   input              clk, rst, squash;
 
    always @ (posedge clk or negedge rst)
      if (~rst)
